@@ -1,0 +1,12 @@
+#card {
+    border: 1px solid black;
+    padding: 8px;
+}
+
+#fullName {
+    font-weight: bold;
+}
+
+label {
+    font-weight: bold;
+}
