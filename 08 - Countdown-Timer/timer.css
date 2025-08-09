@@ -1,0 +1,77 @@
+body {
+    background-color: #333;
+    color: white;
+    font-family: arial, sens-serif;
+}
+
+.container {
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh;
+}
+
+.timer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.timer {
+    flex: 1;
+    text-align: center;
+}
+
+.label {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.time {
+    font-size: 48px;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.set-buttons, 
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.button {
+    width: 80px;
+    height: 40px;
+    background-color: #4caf50;
+    color: white;
+    padding-bottom: 4px;
+    font-size: 28px;
+    line-height: 28px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.button:hover {
+    background-color: white;
+    color: #4caf50;
+}
+
+.playing {
+    color: white;
+}
+
+.paused {
+    color: yellow;
+}
