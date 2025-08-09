@@ -21,6 +21,7 @@ withdrawButton.addEventListener("click", function() {
     const amount = prompt("Welcher Betrag (in EUR) soll abgehoben werden?", "0");
     updateUI(amount, false);
 })
+
 // Event-Listener - ENDE
 
 // Funktionen - START
