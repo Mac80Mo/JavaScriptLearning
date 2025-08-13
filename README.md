@@ -2,7 +2,7 @@
 
 ## JavaScript-Campus+
 
-Dieses Repository dokumentiert meinen Lernweg durch einen intensiven JavaScript-Kurs mit praktischen Projekten und Übungen.
+Dieses Repository dokumentiert meinen Lernweg...
 
 ## 📚 Grundlagen-Dateien
 
