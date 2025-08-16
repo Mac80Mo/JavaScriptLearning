@@ -1,7 +1,12 @@
 const canvas = document.getElementById("main-canvas");
 const context = canvas.getContext("2d");
 
-context.fillStyle = "#333";
-context.fillRect(0, 0, 100, 100);
-context.fillStyle = "#333";
-context.fillRect(250, 0, 100, 100);
+for (let i = 0; i < 100; i++) {
+  draw(i);
+}
+
+function draw(i) {
+  //context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = "#333";
+  context.fillRect(i, i, 100, 100);
+}
