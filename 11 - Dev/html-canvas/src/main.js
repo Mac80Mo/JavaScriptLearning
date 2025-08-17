@@ -1,19 +1,37 @@
 const canvas = document.getElementById("main-canvas");
 const context = canvas.getContext("2d");
 
-let x = 0;
-let xInc = 1;
+let score = 0;
+const pointsForBlock = 1;
+
+// Spieler-Variablen
+let playerX = 0;
+let playerInc = 0;
+let playerY = canvas.height - 50;
 const playerWidth = 100; // Breite des Schlägers
-const speed = 25; // Geschwindigkeit
+const playerHeight = 10;
+const playerSpeed = 5; // Geschwindigkeit
+
+// Gegenstand der Fällt
+let blockX = 100;
+let blockY = 0;
+let blockVisible = true;
+const blockWidth = 10;
+const blockHeight = 10;
+const blockSpeed = 2;
 
 document.addEventListener("keydown", (event) => {
   console.log(event.code);
 
-  if (event.code == "ArrowLeft") {
-    xInc = -speed;
-  } else if (event.code == "ArrowRight") {
-    xInc = speed;
+  if (event.code === "ArrowLeft") {
+    playerInc = -playerSpeed;
+  } else if (event.code === "ArrowRight") {
+    playerInc = playerSpeed;
   }
+});
+
+document.addEventListener("keyup", () => {
+  playerInc = 0;
 });
 
 draw();
@@ -21,18 +39,40 @@ draw();
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#333";
-  context.fillRect(x, canvas.height - 25, playerWidth, 10);
-  x += xInc;
+  context.fillRect(playerX, playerY, playerWidth, playerHeight);
+  playerX += playerInc;
 
-  if (x < 0) {
-    x = 0;
+  if (playerX < 0) {
+    playerX = 0;
   }
 
-  if (x + playerWidth >= canvas.width) {
-    x = canvas.width - playerWidth;
+  if (playerX + playerWidth >= canvas.width) {
+    playerX = canvas.width - playerWidth;
   }
 
-  xInc = 0;
+  if (blockVisible) {
+    context.fillStyle = "red";
+    context.fillRect(blockX, blockY, blockWidth, blockHeight);
+    blockY += blockSpeed; // Damit der Block runterfällt: blockY + blockSpeed
+  }
+
+  checkForCollision();
 
   requestAnimationFrame(draw);
+}
+
+function checkForCollision() {
+  const blockBottom = blockY + blockHeight;
+
+  if (blockVisible && blockBottom >= playerY) {
+    const blockRight = blockX + blockWidth;
+    if (
+      (blockX >= playerX && blockX <= playerX + playerWidth) ||
+      (blockRight >= playerX && blockRight <= playerX + playerWidth)
+    ) {
+      blockVisible = false;
+      score += pointsForBlock;
+      console.log(`Punkte: ${score.toString()}`);
+    }
+  }
 }
