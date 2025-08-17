@@ -1,15 +1,18 @@
 const canvas = document.getElementById("main-canvas");
 const context = canvas.getContext("2d");
 
-let i = 0;
-let dir = 1;
+let x = 0;
+let xInc = 1;
+const playerWidth = 100; // Breite des Schlägers
+const speed = 25; // Geschwindigkeit
 
 document.addEventListener("keydown", (event) => {
-  console - log(event.code);
+  console.log(event.code);
+
   if (event.code == "ArrowLeft") {
-    dir = -1 * dir;
+    xInc = -speed;
   } else if (event.code == "ArrowRight") {
-    dir = 1;
+    xInc = speed;
   }
 });
 
@@ -18,8 +21,18 @@ draw();
 function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#333";
-  context.fillRect(i, 100, 100, 100);
-  i += dir * 1;
+  context.fillRect(x, canvas.height - 25, playerWidth, 10);
+  x += xInc;
+
+  if (x < 0) {
+    x = 0;
+  }
+
+  if (x + playerWidth >= canvas.width) {
+    x = canvas.width - playerWidth;
+  }
+
+  xInc = 0;
 
   requestAnimationFrame(draw);
 }
