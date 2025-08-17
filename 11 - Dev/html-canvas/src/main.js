@@ -37,7 +37,18 @@ document.addEventListener("keyup", () => {
 draw();
 
 function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  clearCanvas();
+
+  drawPlayer();
+  drawBlock();
+  drawScore();
+
+  checkForCollision();
+
+  requestAnimationFrame(draw);
+}
+
+function drawPlayer() {
   context.fillStyle = "#333";
   context.fillRect(playerX, playerY, playerWidth, playerHeight);
   playerX += playerInc;
@@ -49,16 +60,24 @@ function draw() {
   if (playerX + playerWidth >= canvas.width) {
     playerX = canvas.width - playerWidth;
   }
+}
 
+function drawBlock() {
   if (blockVisible) {
     context.fillStyle = "red";
     context.fillRect(blockX, blockY, blockWidth, blockHeight);
     blockY += blockSpeed; // Damit der Block runterfällt: blockY + blockSpeed
   }
+}
 
-  checkForCollision();
+function drawScore() {
+  context.font = "16px Arial";
+  context.fillStyle = "blue";
+  context.fillText(`Punkte: ${score.toString()}`, canvas.width - 100, 20); // x, y -> koordinaten
+}
 
-  requestAnimationFrame(draw);
+function clearCanvas() {
+  context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function checkForCollision() {
@@ -72,7 +91,6 @@ function checkForCollision() {
     ) {
       blockVisible = false;
       score += pointsForBlock;
-      console.log(`Punkte: ${score.toString()}`);
     }
   }
 }
