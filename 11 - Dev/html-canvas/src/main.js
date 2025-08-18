@@ -5,14 +5,17 @@ let score = 0;
 const pointsForBlock = 1;
 
 // Spieler-Variablen
-let playerX = 0;
-let playerInc = 0;
-let playerY = canvas.height - 50;
+const player = {
+  x: 0,
+  y: canvas.height - 50,
+  xInc: 0,
+};
+
 const playerWidth = 100; // Breite des Schlägers
 const playerHeight = 10;
 const playerSpeed = 5; // Geschwindigkeit
 
-// Gegenstand der Fällt
+// Block-Variablen
 let blockX = 100;
 let blockY = 0;
 let blockVisible = true;
@@ -24,14 +27,14 @@ document.addEventListener("keydown", (event) => {
   console.log(event.code);
 
   if (event.code === "ArrowLeft") {
-    playerInc = -playerSpeed;
+    player.xInc = -playerSpeed;
   } else if (event.code === "ArrowRight") {
-    playerInc = playerSpeed;
+    player.xInc = playerSpeed;
   }
 });
 
 document.addEventListener("keyup", () => {
-  playerInc = 0;
+  player.xInc = 0;
 });
 
 draw();
@@ -50,15 +53,15 @@ function draw() {
 
 function drawPlayer() {
   context.fillStyle = "#333";
-  context.fillRect(playerX, playerY, playerWidth, playerHeight);
-  playerX += playerInc;
+  context.fillRect(player.x, player.y, playerWidth, playerHeight);
+  player.x += player.xInc;
 
-  if (playerX < 0) {
-    playerX = 0;
+  if (player.x < 0) {
+    player.x = 0;
   }
 
-  if (playerX + playerWidth >= canvas.width) {
-    playerX = canvas.width - playerWidth;
+  if (player.x + playerWidth >= canvas.width) {
+    player.x = canvas.width - playerWidth;
   }
 }
 
@@ -83,14 +86,18 @@ function clearCanvas() {
 function checkForCollision() {
   const blockBottom = blockY + blockHeight;
 
-  if (blockVisible && blockBottom >= playerY) {
+  if (blockVisible && blockBottom >= player.y) {
     const blockRight = blockX + blockWidth;
     if (
-      (blockX >= playerX && blockX <= playerX + playerWidth) ||
-      (blockRight >= playerX && blockRight <= playerX + playerWidth)
+      (blockX >= player.x && blockX <= player.x + playerWidth) ||
+      (blockRight >= player.x && blockRight <= player.x + playerWidth)
     ) {
       blockVisible = false;
       score += pointsForBlock;
     }
+  }
+
+  if (blockY > player.y + playerHeight) {
+    blockVisible = false;
   }
 }
