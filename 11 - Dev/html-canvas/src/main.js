@@ -16,9 +16,30 @@ const playerHeight = 10;
 const playerSpeed = 5; // Geschwindigkeit
 
 // Block-Variablen
-let blockX = 100;
-let blockY = 0;
-let blockVisible = true;
+const block = {
+  x: 101,
+  y: 0,
+  visible: true,
+};
+
+const blocks = [
+  {
+    x: 101,
+    y: 0,
+    visible: true,
+  },
+  {
+    x: 250,
+    y: 0,
+    visible: true,
+  },
+  {
+    x: 380,
+    y: 0,
+    visible: true,
+  },
+];
+
 const blockWidth = 10;
 const blockHeight = 10;
 const blockSpeed = 2;
@@ -43,7 +64,7 @@ function draw() {
   clearCanvas();
 
   drawPlayer();
-  drawBlock();
+  drawBlocks();
   drawScore();
 
   checkForCollision();
@@ -65,11 +86,14 @@ function drawPlayer() {
   }
 }
 
-function drawBlock() {
-  if (blockVisible) {
-    context.fillStyle = "red";
-    context.fillRect(blockX, blockY, blockWidth, blockHeight);
-    blockY += blockSpeed; // Damit der Block runterfällt: blockY + blockSpeed
+function drawBlocks() {
+  for (let i = 0; i < blocks.length; i += 1) {
+    const block = blocks[i];
+    if (block.visible) {
+      context.fillStyle = "red";
+      context.fillRect(block.x, block.y, blockWidth, blockHeight);
+      block.y += blockSpeed;
+    } // Damit der Block runterfällt: blockY + blockSpeed
   }
 }
 
@@ -84,20 +108,24 @@ function clearCanvas() {
 }
 
 function checkForCollision() {
-  const blockBottom = blockY + blockHeight;
+  for (let i = 0; i < blocks.length; i += 1) {
+    const block = blocks[i];
 
-  if (blockVisible && blockBottom >= player.y) {
-    const blockRight = blockX + blockWidth;
-    if (
-      (blockX >= player.x && blockX <= player.x + playerWidth) ||
-      (blockRight >= player.x && blockRight <= player.x + playerWidth)
-    ) {
-      blockVisible = false;
-      score += pointsForBlock;
+    const blockBottom = block.y + blockHeight;
+
+    if (block.visible && blockBottom >= player.y) {
+      const blockRight = block.x + blockWidth;
+      if (
+        (block.x >= player.x && block.x <= player.x + playerWidth) ||
+        (blockRight >= player.x && blockRight <= player.x + playerWidth)
+      ) {
+        block.visible = false;
+        score += pointsForBlock;
+      }
     }
   }
 
-  if (blockY > player.y + playerHeight) {
+  if (block.y > player.y + playerHeight) {
     blockVisible = false;
   }
 }
