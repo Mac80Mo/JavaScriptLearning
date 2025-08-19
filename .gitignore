@@ -1,11 +1,13 @@
-# IDE und Editor-Dateien
-.vscode/
+# IDE & Editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
 
-# Betriebssystem-Dateien
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -15,40 +17,64 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
-# Node.js (falls später hinzugefügt)
-node_modules/
+# Node / Package Manager
+**/node_modules/
+**/.pnp
+**/.pnp.js
+.npm
+.yarn-integrity
+# Logs
+**/logs/
+**/*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.npm
-.yarn-integrity
+pnpm-debug.log*
 
-# Temporäre Dateien
+# Temp & Cache
 *.tmp
 *.temp
-*.log
-
-# Backup-Dateien
-*.bak
-*.backup
-*.orig
-
-# Cache-Dateien
 .cache/
+**/.cache/
 *.cache
-
-# Build-Ausgaben (für zukünftige Projekte)
-dist/
-build/
-out/
-
-# Umgebungsvariablen
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Coverage-Reports
-coverage/
+**/.parcel-cache/
+**/.turbo/
+.eslintcache
+.stylelintcache
+.jest/
+# Jest/Playwright/Cypress
+**/coverage/
 *.lcov
+test-results/
+playwright-report/
+cypress/screenshots/
+cypress/videos/
+
+# Build-Ausgaben
+**/dist/
+**/build/
+out/
+.storybook-out/
+storybook-static/
+
+# Bundler/Framework spezifisch (optional, falls genutzt)
+.next/
+.nuxt/
+.vite/
+.svelte-kit/
+
+# TypeScript
+*.tsbuildinfo
+
+# Umgebungsvariablen / Secrets
+.env
+.env.*
+!.env.example
+
+# Datenbanken lokal (optional – nur, wenn du SQLite/Dev-DBs nicht committen willst)
+*.sqlite
+*.sqlite-journal
+
+# Uploads lokal (optional)
+uploads/
+public/uploads/
