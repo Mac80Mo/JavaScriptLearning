@@ -1,6 +1,7 @@
 const canvas = document.getElementById("main-canvas");
 const context = canvas.getContext("2d");
 
+let level = 1;
 let gamePaused = false;
 let score = 0;
 let currentBlockCount = 0;
@@ -80,6 +81,28 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
+function checkForLevelCompleted() {
+  if (gamePaused) {
+    return;
+  }
+
+  if (currentBlockCount >= 15) {
+    gamePaused = true;
+
+    setTimeout(() => {
+      const success = score >= (currentBlockCount * pointsForBlock) / 2;
+
+      if (success) {
+        score = 0;
+        currentBlockCount = 0;
+
+        level += 1;
+        gamePaused = false;
+      }
+    }, 5 * 1000);
+  }
+}
+
 function drawLevelCompleted() {
   if (!gamePaused) {
     return;
@@ -92,20 +115,12 @@ function drawLevelCompleted() {
   context.textAlign = "center";
   context.fillText(`Level beendet!`, canvas.width / 2, 100);
   context.fillText(
-    success ? "Du hast es geschafft!" : "Du hast es nicht geschafft",
+    success
+      ? "Du hast es geschafft!"
+      : "Du hast es nicht geschafft, Game Over!",
     canvas.width / 2,
     150
   );
-}
-
-function checkForLevelCompleted() {
-  if (gamePaused) {
-    return;
-  }
-
-  if (currentBlockCount >= 15) {
-    gamePaused = true;
-  }
 }
 
 function drawPlayer() {
@@ -144,8 +159,10 @@ function drawScore() {
   context.font = "16px Arial";
   context.fillStyle = "blue";
   context.fillText(
-    `Punkte: ${score.toString()} (${currentBlockCount * pointsForBlock})`,
-    canvas.width - 150,
+    `Level: ${level} Punkte: ${score.toString()} (${
+      currentBlockCount * pointsForBlock
+    })`,
+    canvas.width - 200,
     20
   ); // x, y -> koordinaten
 }
