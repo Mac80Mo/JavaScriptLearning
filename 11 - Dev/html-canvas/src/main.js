@@ -72,11 +72,30 @@ function draw() {
   drawPlayer();
   drawBlocks();
   drawScore();
+  drawLevelCompleted();
 
   checkForCollision();
   checkForLevelCompleted();
 
   requestAnimationFrame(draw);
+}
+
+function drawLevelCompleted() {
+  if (!gamePaused) {
+    return;
+  }
+
+  const success = score >= (currentBlockCount * pointsForBlock) / 2;
+
+  context.font = "26px Arial";
+  context.fillStyle = success ? "green" : "orange";
+  context.textAlign = "center";
+  context.fillText(`Level beendet!`, canvas.width / 2, 100);
+  context.fillText(
+    success ? "Du hast es geschafft!" : "Du hast es nicht geschafft",
+    canvas.width / 2,
+    150
+  );
 }
 
 function checkForLevelCompleted() {
