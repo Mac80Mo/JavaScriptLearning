@@ -46,7 +46,7 @@ const blocks = [
 
 const blockWidth = 10;
 const blockHeight = 10;
-const blockSpeed = 0.1;
+let blockSpeed = 0.1;
 
 function addEventListeners() {
   document.addEventListener("keydown", (event) => {
@@ -66,6 +66,7 @@ function addEventListeners() {
 }
 
 addEventListeners();
+
 requestAnimationFrame(draw);
 
 function draw(currentTime) {
@@ -101,6 +102,7 @@ function checkForLevelCompleted() {
         currentBlockCount = 0;
 
         level += 1;
+        blockSpeed += 0.033;
         gamePaused = false;
       }
     }, 5 * 1000);
