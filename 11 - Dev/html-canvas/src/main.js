@@ -1,11 +1,12 @@
 const canvas = document.getElementById("main-canvas");
 const context = canvas.getContext("2d");
 
+let lastDrawTime = 0;
 let level = 1;
 let gamePaused = false;
 let score = 0;
 let currentBlockCount = 0;
-const pointsForBlock = 1;
+const pointsForBlock = 0.5;
 
 // Spieler-Variablen
 const player = {
@@ -16,7 +17,7 @@ const player = {
 
 const playerWidth = 100; // Breite des Schlägers
 const playerHeight = 10;
-const playerSpeed = 5; // Geschwindigkeit
+const playerSpeed = 1; // Geschwindigkeit
 
 // Block-Variablen
 const block = {
@@ -45,7 +46,7 @@ const blocks = [
 
 const blockWidth = 10;
 const blockHeight = 10;
-const blockSpeed = 2;
+const blockSpeed = 0.1;
 
 function addEventListeners() {
   document.addEventListener("keydown", (event) => {
@@ -65,19 +66,22 @@ function addEventListeners() {
 }
 
 addEventListeners();
-draw();
+requestAnimationFrame(draw);
 
-function draw() {
+function draw(currentTime) {
+  const timePassed = currentTime - lastDrawTime;
+  console.log(timePassed);
   clearCanvas();
 
-  drawPlayer();
-  drawBlocks();
+  drawPlayer(timePassed);
+  drawBlocks(timePassed);
   drawScore();
   drawLevelCompleted();
 
   checkForCollision();
   checkForLevelCompleted();
 
+  lastDrawTime = currentTime;
   requestAnimationFrame(draw);
 }
 
@@ -123,7 +127,7 @@ function drawLevelCompleted() {
   );
 }
 
-function drawPlayer() {
+function drawPlayer(timePassed) {
   context.fillStyle = "#333";
   context.fillRect(player.x, player.y, playerWidth, playerHeight);
 
@@ -131,7 +135,7 @@ function drawPlayer() {
     return;
   }
 
-  player.x += player.xInc;
+  player.x += timePassed * player.xInc;
 
   if (player.x < 0) {
     player.x = 0;
@@ -142,7 +146,7 @@ function drawPlayer() {
   }
 }
 
-function drawBlocks() {
+function drawBlocks(timePassed) {
   for (let i = 0; i < blocks.length; i += 1) {
     const block = blocks[i];
 
@@ -150,7 +154,7 @@ function drawBlocks() {
     context.fillRect(block.x, block.y, blockWidth, blockHeight);
 
     if (!gamePaused) {
-      block.y += blockSpeed; // Damit der Block runterfällt: blockY + blockSpeed
+      block.y += timePassed * blockSpeed; // Damit der Block runterfällt: blockY + blockSpeed
     }
   }
 }
@@ -158,11 +162,12 @@ function drawBlocks() {
 function drawScore() {
   context.font = "16px Arial";
   context.fillStyle = "blue";
+  context.textAlign = "right";
   context.fillText(
     `Level: ${level} Punkte: ${score.toString()} (${
       currentBlockCount * pointsForBlock
     })`,
-    canvas.width - 200,
+    canvas.width - 20,
     20
   ); // x, y -> koordinaten
 }
