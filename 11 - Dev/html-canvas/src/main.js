@@ -7,6 +7,7 @@ let gamePaused = false;
 let score = 0;
 let currentBlockCount = 0;
 const pointsForBlock = 0.5;
+let powerUpProbability = 0.05;
 
 // Spieler-Variablen
 const player = {
@@ -15,7 +16,8 @@ const player = {
   xInc: 0,
 };
 
-const playerWidth = 100; // Breite des Schlägers
+const initialPlayerWidth = 100;
+let playerWidth = initialPlayerWidth; // Breite des Schlägers
 const playerHeight = 10;
 const playerSpeed = 1; // Geschwindigkeit
 
@@ -41,6 +43,11 @@ const blocks = [
   {
     x: 80,
     y: -300,
+  },
+  {
+    x: 225,
+    y: -400,
+    powerUp: true,
   },
 ];
 
@@ -152,7 +159,7 @@ function drawBlocks(timePassed) {
   for (let i = 0; i < blocks.length; i += 1) {
     const block = blocks[i];
 
-    context.fillStyle = "red";
+    context.fillStyle = block.powerUp ? "green" : "red";
     context.fillRect(block.x, block.y, blockWidth, blockHeight);
 
     if (!gamePaused) {
@@ -192,8 +199,15 @@ function checkForCollision() {
         (block.x >= player.x && block.x <= player.x + playerWidth) ||
         (blockRight >= player.x && blockRight <= player.x + playerWidth)
       ) {
-        resetBlock(block);
+        if (block.powerUp) {
+          playerWidth = initialPlayerWidth * 1.5;
+          setTimeout(() => {
+            playerWidth = initialPlayerWidth;
+          }, 5 * 1000);
+        }
+
         score += pointsForBlock;
+        resetBlock(block);
       }
     }
 
@@ -206,5 +220,6 @@ function checkForCollision() {
 function resetBlock(block) {
   block.y = -100;
   block.x = Math.random() * (canvas.width - blockWidth);
+  block.powerUp = Math.random() < powerUpProbability;
   currentBlockCount += 1;
 }
