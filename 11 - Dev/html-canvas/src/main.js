@@ -91,6 +91,10 @@ function addEventListeners() {
   });
 }
 
+document.addEventListener("mousemove", (event) => {
+  player.x = event.clientX - playerWidth / 2;
+});
+
 addEventListeners();
 
 requestAnimationFrame(draw);
@@ -163,15 +167,15 @@ function drawPlayer(timePassed) {
     return;
   }
 
-  player.x += timePassed * player.xInc;
+  //player.x += timePassed * player.xInc;
 
-  if (player.x < 0) {
-    player.x = 0;
-  }
+  // if (player.x < 0) {
+  //   player.x = 0;
+  // }
 
-  if (player.x + playerWidth >= canvas.width) {
-    player.x = canvas.width - playerWidth;
-  }
+  // if (player.x + playerWidth >= canvas.width) {
+  //   player.x = canvas.width - playerWidth;
+  // }
 }
 
 function drawBlocks(timePassed) {
