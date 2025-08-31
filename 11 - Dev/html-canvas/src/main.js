@@ -21,6 +21,12 @@ let playerWidth = initialPlayerWidth; // Breite des Schlägers
 const playerHeight = 10;
 const playerSpeed = 1; // Geschwindigkeit
 
+// keys
+const keys = {
+  arrowLeft: false,
+  arrowRight: false,
+};
+
 // Block-Variablen
 const block = {
   x: 101,
@@ -61,13 +67,26 @@ function addEventListeners() {
       return;
     }
     if (event.code === "ArrowLeft") {
+      keys.arrowLeft = true;
       player.xInc = -playerSpeed;
     } else if (event.code === "ArrowRight") {
+      keys.arrowRight = true;
       player.xInc = playerSpeed;
     }
   });
 
-  document.addEventListener("keyup", () => {
+  document.addEventListener("keyup", (event) => {
+    if (event.code == "ArrowLeft") {
+      keys.arrowLeft = false;
+      if (!keys.arrowRight) {
+        player.xInc = 0;
+      }
+    } else if (event.code == "ArrowRight") {
+      keys.arrowRight = false;
+      if (!keys.arrowLeft) {
+        player.xInc = 0;
+      }
+    }
     player.xInc = 0;
   });
 }
