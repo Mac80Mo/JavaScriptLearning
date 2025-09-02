@@ -1,7 +1,11 @@
-const result = fetch("https://api.coinpaprika.com/v1/tickers?quotes=USD");
-result.then((response) => {
-  const bodyResponse = response.json();
-  bodyResponse.then((body) => {
-    console.log("body:", body);
-  });
-});
+const res = await fetchData();
+alert(res);
+
+async function fetchData() {
+  const response = await fetch(
+    "https://api.coinpaprika.com/v1/tickers?quotes=USD"
+  );
+  const data = await response.json();
+  console.log(data);
+  return true;
+}
