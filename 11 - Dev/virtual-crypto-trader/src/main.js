@@ -1,12 +1,14 @@
-const data = await fetchData();
-console.log("Komplette API-Antwort:", data); // Gibt das gesamte Array aus
-
 const coinsToDisplay = ["BTC", "ETH", "SOL", "XRP", "XLM", "ADA"];
+const data = await fetchData();
+let output = "";
 
 // Filtere die Daten und wende anschließend forEach an
 data
   .filter((coinData) => coinsToDisplay.includes(coinData.symbol))
   .forEach((coinData) => {
+    output =
+      output +
+      `<div>Coin: ${coinData.symbol}, Price: ${coinData.quotes.USD.price} $</div>`;
     console.log(
       "Coin:",
       coinData.symbol,
@@ -15,20 +17,9 @@ data
     );
   });
 
-//for (const coinData of filteredData) {
-//  console.log("Coin:", coinData.symbol, "price $:", coinData.quotes.USD.price);
-//}
+const appDiv = document.getElementById("coinlist");
+appDiv.innerHTML = output;
 
-//for (const coinData of data) {
-//  if (coinsToDisplay.includes(coinData.symbol)) {
-//    console.log(
-//      "Coin:",
-//      coinData.symbol,
-//      "price $:",
-//      coinData.quotes.USD.price
-//    );
-//  }
-//}
 async function fetchData() {
   const response = await fetch(
     "https://api.coinpaprika.com/v1/tickers?quotes=USD"
