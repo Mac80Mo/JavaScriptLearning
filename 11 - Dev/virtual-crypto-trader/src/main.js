@@ -1,20 +1,22 @@
-const res = await fetchData();
+const data = await fetchData();
+console.log("Komplette API-Antwort:", data); // Gibt das gesamte Array aus
 
+for (const coinData of data) {
+  console.log("Coin:", coinData.symbol, "price $:", coinData.quotes.USD.price);
+}
 async function fetchData() {
   const response = await fetch(
     "https://api.coinpaprika.com/v1/tickers?quotes=USD"
   );
 
-  let data;
+  let dataResponse;
 
   try {
-    data = await response.json();
+    dataResponse = await response.json();
   } catch (err) {
-    data = {};
-    console.log(err);
+    dataResponse = {};
+    console.log("Fehler beim Abrufen der Daten:", err);
   }
 
-  console.log(data);
-
-  return true;
+  return dataResponse; // Direkt die gesamte Antwort zurückgeben
 }
