@@ -65,10 +65,17 @@ function buyCoin(symbol) {
   const amountString = prompt("Buying " + symbol);
   const amount = parseFloat(amountString);
   if (Number.isNaN(amount)) {
-    alert("Not a Number");
-  } else {
-    alert("Number");
+    return;
   }
+
+  if (amount <= 0) {
+    return;
+  }
+
+  const coinData = data.find((coin) => coin.symbol === symbol);
+  balance = balance - amount * parseFloat(coinData.quotes.USD.price);
+
+  renderStatus(balance);
 }
 
 globalThis.buyCoin = buyCoin;
