@@ -28,6 +28,7 @@ function renderTable(_data) {
         `<tr>
         <td>${coinData.symbol}</td>
         <td>${coinData.quotes.USD.price}</td>
+        <td><button onclick="buyCoin('${coinData.symbol}')">Buy</button></td>
       </tr>`;
       console.log(
         "Coin:",
@@ -59,3 +60,15 @@ async function fetchData() {
 
   return dataResponse; // Direkt die gesamte Antwort zurückgeben
 }
+
+function buyCoin(symbol) {
+  const amountString = prompt("Buying " + symbol);
+  const amount = parseFloat(amountString);
+  if (Number.isNaN(amount)) {
+    alert("Not a Number");
+  } else {
+    alert("Number");
+  }
+}
+
+globalThis.buyCoin = buyCoin;
