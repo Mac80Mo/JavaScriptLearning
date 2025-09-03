@@ -1,17 +1,28 @@
 const coinsToDisplay = ["BTC", "ETH", "XRP", "XLM", "ADA"];
 let balance = 100000;
 const coinAmounts = new Map();
+let data;
 
-const data = await fetchData();
+await refresh();
 
-renderStatus(balance, data);
-renderTable(data);
+async function refresh() {
+  data = await fetchData();
+
+  renderStatus(balance, data);
+  renderTable(data);
+}
 
 function renderStatus(_balance, data) {
   const statusDiv = document.getElementById("status");
   statusDiv.innerHTML = `<h2>Status</h2>
   <p>Balance: ${_balance}</p>
-  <p>Portfolio: ${getPortfolioValue(data)}</p>`;
+  <p>Portfolio: ${getPortfolioValue(data)}</p>
+  <button id="refreshButton">Refresh</button>`;
+
+  const refreshButton = document.getElementById("refreshButton");
+  refreshButton.addEventListener("click", async (event) => {
+    await refresh();
+  });
 }
 
 function getPortfolioValue(data) {
