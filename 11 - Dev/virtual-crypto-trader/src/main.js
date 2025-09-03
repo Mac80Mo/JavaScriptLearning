@@ -1,6 +1,6 @@
-const coinsToDisplay = ["BTC", "ETH", "SOL", "XRP", "XLM", "ADA"];
+const coinsToDisplay = ["BTC", "ETH", "XRP", "XLM", "ADA"];
 let balance = 100000;
-const coinAmounts = {};
+const coinAmounts = new Map();
 
 const data = await fetchData();
 
@@ -18,6 +18,8 @@ function renderTable(_data) {
 <tr>
   <th>Symbol</th>
   <th>Price in USD</th>
+  <th>Amount</th>
+  <th>Actions</th>
 </tr>`;
 
   // Filtere die Daten und wende anschließend forEach an
@@ -29,6 +31,7 @@ function renderTable(_data) {
         `<tr>
         <td>${coinData.symbol}</td>
         <td>${coinData.quotes.USD.price}</td>
+        <td>${coinAmounts.get(coinData.symbol) ?? 0}</td>
         <td><button onclick="buyCoin('${coinData.symbol}')">Buy</button></td>
       </tr>`;
       console.log(
@@ -76,13 +79,14 @@ function buyCoin(symbol) {
   const coinData = data.find((coin) => coin.symbol === symbol);
   balance = balance - amount * parseFloat(coinData.quotes.USD.price);
 
-  let oldAmount = coinAmounts[symbol];
+  let oldAmount = coinAmounts.get(symbol);
   if (oldAmount === undefined) {
     oldAmount = 0;
   }
-  coinAmounts[symbol] = oldAmount + amount;
+  coinAmounts.set(symbol, oldAmount + amount);
 
   renderStatus(balance);
+  renderTable(data);
 }
 
 globalThis.buyCoin = buyCoin;
