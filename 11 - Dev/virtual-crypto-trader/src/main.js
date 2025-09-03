@@ -1,6 +1,11 @@
 const coinsToDisplay = ["BTC", "ETH", "SOL", "XRP", "XLM", "ADA"];
+
 const data = await fetchData();
-let output = "";
+let output = `<table>
+<tr>
+  <th>Symbol</th>
+  <th>Price in USD</th>
+</tr>`;
 
 // Filtere die Daten und wende anschließend forEach an
 data
@@ -8,7 +13,10 @@ data
   .forEach((coinData) => {
     output =
       output +
-      `<div>Coin: ${coinData.symbol}, Price: ${coinData.quotes.USD.price} $</div>`;
+      `<tr>
+        <td>${coinData.symbol}</td>
+        <td>${coinData.quotes.USD.price}</td>
+      </tr>`;
     console.log(
       "Coin:",
       coinData.symbol,
@@ -16,6 +24,8 @@ data
       coinData.quotes.USD.price
     );
   });
+
+output += "</table>";
 
 const appDiv = document.getElementById("coinlist");
 appDiv.innerHTML = output;
