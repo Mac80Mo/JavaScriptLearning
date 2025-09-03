@@ -1,5 +1,6 @@
 const coinsToDisplay = ["BTC", "ETH", "SOL", "XRP", "XLM", "ADA"];
 let balance = 100000;
+const coinAmounts = {};
 
 const data = await fetchData();
 
@@ -74,6 +75,12 @@ function buyCoin(symbol) {
 
   const coinData = data.find((coin) => coin.symbol === symbol);
   balance = balance - amount * parseFloat(coinData.quotes.USD.price);
+
+  let oldAmount = coinAmounts[symbol];
+  if (oldAmount === undefined) {
+    oldAmount = 0;
+  }
+  coinAmounts[symbol] = oldAmount + amount;
 
   renderStatus(balance);
 }
