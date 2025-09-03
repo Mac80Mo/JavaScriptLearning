@@ -4,13 +4,26 @@ const coinAmounts = new Map();
 
 const data = await fetchData();
 
-renderStatus(balance);
+renderStatus(balance, data);
 renderTable(data);
 
-function renderStatus(_balance) {
+function renderStatus(_balance, data) {
   const statusDiv = document.getElementById("status");
   statusDiv.innerHTML = `<h2>Status</h2>
-  <p>Balance: ${_balance}</p>`;
+  <p>Balance: ${_balance}</p>
+  <p>Portfolio: ${getPortfolioValue(data)}</p>`;
+}
+
+function getPortfolioValue(data) {
+  let sum = 0;
+  for (const entry of coinAmounts.entries()) {
+    const symbol = entry[0];
+    const amount = entry[1];
+
+    const coinData = data.find((coin) => coin.symbol === symbol);
+    sum += amount * parseFloat(coinData.quotes.USD.price);
+  }
+  return sum;
 }
 
 function renderTable(_data) {
@@ -34,12 +47,6 @@ function renderTable(_data) {
         <td>${coinAmounts.get(coinData.symbol) ?? 0}</td>
         <td><button onclick="buyCoin('${coinData.symbol}')">Buy</button></td>
       </tr>`;
-      console.log(
-        "Coin:",
-        coinData.symbol,
-        "price $:",
-        coinData.quotes.USD.price
-      );
     });
 
   output += "</table>";
@@ -85,7 +92,7 @@ function buyCoin(symbol) {
   }
   coinAmounts.set(symbol, oldAmount + amount);
 
-  renderStatus(balance);
+  renderStatus(balance, data);
   renderTable(data);
 }
 
