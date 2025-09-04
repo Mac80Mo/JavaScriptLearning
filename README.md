@@ -8,9 +8,9 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 
 - **Grundlagen:** 6 Basis-Dateien mit fundamentalen Konzepten
 - **Frontend-Projekte:** 10 interaktive Web-Anwendungen
-- **Development-Projekte:** 3 Vite-basierte moderne Projekte
+- **Development-Projekte:** 4 Vite-basierte moderne Projekte
 - **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine
-- **Gesamtprojekte:** 20+ Dateien mit verschiedenen Komplexitätsgraden
+- **Gesamtprojekte:** 21+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -152,6 +152,22 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Konzepte:** Canvas 2D Context, Animation Loops, Game States
 - **Schwierigkeit:** ⭐⭐⭐⭐⭐ Expert+
 
+### [Virtual Crypto Trader](11%20-%20Dev/virtual-crypto-trader/)
+
+**Kryptowährungs-Trading Simulator**
+
+- **Technologie:** Vite, Fetch API, Local Storage
+- **Dateien:** [`main.js`](11%20-%20Dev/virtual-crypto-trader/src/main.js) (202 Zeilen), [`index.html`](11%20-%20Dev/virtual-crypto-trader/index.html), [`style.css`](11%20-%20Dev/virtual-crypto-trader/src/style.css)
+- **Features:**
+  - Live Krypto-Preise via CoinPaprika API
+  - Virtueller Handel mit BTC, ETH, XRP, XLM, ADA
+  - Portfolio-Tracking und Balance-Verwaltung
+  - Persistente Datenspeichers mit localStorage
+  - Real-time Refresh-Funktionalität
+- **Konzepte:** Async/Await, API Integration, Map Data Structure, Local Storage, Financial Logic
+- **API:** CoinPaprika REST API für Live-Marktdaten
+- **Schwierigkeit:** ⭐⭐⭐⭐ Master
+
 ## 🖥️ Backend-Projekt (12 - ExpressBasics)
 
 ### [Express.js Server Application](12%20-%20ExpressBasics/)
@@ -214,10 +230,11 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 | **DOM-Manipulation**  | ✅ getElementById      | ✅ querySelector/All | ✅ createElement/appendChild      | ✅ Event-Delegation     |
 | **Event-Handling**    | ✅ addEventListener    | ✅ Event-Objekt      | ✅ preventDefault/stopPropagation | ✅ Custom Events        |
 | **Arrays & Objects**  | ✅ push/pop/shift      | ✅ map/filter/reduce | ✅ sort/find/includes             | ✅ Destructuring/Spread |
-| **Async Programming** | ✅ setTimeout/Interval | ✅ Callbacks         | ✅ Promises                       | ⏳ async/await          |
+| **Async Programming** | ✅ setTimeout/Interval | ✅ Callbacks         | ✅ Promises                       | ✅ async/await          |
+| **API Integration**   | ⏳ Basic Fetch         | ✅ REST APIs         | ✅ Error Handling                 | ✅ Real-time Data       |
 | **ES6+ Features**     | ✅ let/const           | ✅ Arrow Functions   | ✅ Template Literals              | ✅ Modules              |
 | **Form Handling**     | ✅ Basic Input         | ✅ Validation        | ✅ RegExp                         | ✅ Custom Validation    |
-| **Storage APIs**      | ✅ localStorage        | ✅ sessionStorage    | ⏳ IndexedDB                      | ⏳ WebSQL               |
+| **Storage APIs**      | ✅ localStorage        | ✅ sessionStorage    | ✅ Map/Set Collections            | ⏳ IndexedDB            |
 | **Canvas/Graphics**   | ⏳ Basic Drawing       | ✅ 2D Context        | ✅ Animation                      | ✅ Game Development     |
 
 ### Backend-Entwicklung
@@ -247,8 +264,9 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 - ✅ **Funktionen** - Function Declarations, Expressions, Arrow Functions
 - ✅ **Array-Methoden** - Functional Programming mit map, filter, reduce
 - ✅ **Objekte & Prototypes** - Object Manipulation, Property Access
+- ✅ **Map & Set Collections** - Modern Data Structures, Key-Value Pairs
 - ✅ **Event-System** - Event Loop, Bubbling, Capturing
-- ✅ **Asynchrone Programmierung** - Callbacks, Timers, Event-driven Architecture
+- ✅ **Asynchrone Programmierung** - Callbacks, Timers, Promises, async/await
 
 ### DOM & Browser APIs
 
@@ -257,6 +275,7 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 - ✅ **CSS-Integration** - classList API, style-Property, CSS Custom Properties
 - ✅ **Form APIs** - FormData, Validation API, Input Events
 - ✅ **Storage APIs** - localStorage, sessionStorage, Data Persistence
+- ✅ **Fetch API** - REST API Integration, async/await, Error Handling
 - ✅ **Canvas API** - 2D Rendering Context, Animation, Game Graphics
 
 ### Modern JavaScript (ES6+)
@@ -454,25 +473,26 @@ npm run dev
    - Search Implementation
    - **Schwierigkeit:** Master Level
 
-3. **🏦 Geldautomat** (06 - Geldautomat)
+3. **💰 Virtual Crypto Trader** (11 - Dev/virtual-crypto-trader)
+
+   - Live API-Integration mit CoinPaprika
+   - 202 Zeilen komplexe Trading-Logic
+   - Portfolio-Management & Balance-Tracking
+   - Real-time Data Processing
+   - **Schwierigkeit:** Master Level
+
+4. **🏦 Geldautomat** (06 - Geldautomat)
 
    - Financial Transaction Logic
    - State Management & History
    - Complex DOM Updates
    - **Schwierigkeit:** Expert Level
 
-4. **🖥️ Express.js Server** (12 - ExpressBasics)
-
+5. **🖥️ Express.js Server** (12 - ExpressBasics)
    - Full MVC Architecture
    - RESTful API Implementation
    - Template Engine Integration
    - **Schwierigkeit:** Master Level
-
-5. **⏱️ Countdown Timer** (08 - Countdown-Timer)
-   - Real-time Updates & Animation
-   - Complex Time Calculations
-   - State Machine Implementation
-   - **Schwierigkeit:** Expert Level
 
 ## 💡 Key Learnings & Erkenntnisse
 
@@ -525,11 +545,12 @@ npm run dev
 
 ### Codebase Übersicht
 
-- **Gesamtprojekte:** 20+ individuelle Anwendungen
-- **JavaScript-Dateien:** 25+ Skript-Dateien
-- **HTML-Seiten:** 15+ responsive Webseiten
-- **CSS-Stylesheets:** 15+ Design-Implementierungen
+- **Gesamtprojekte:** 21+ individuelle Anwendungen
+- **JavaScript-Dateien:** 26+ Skript-Dateien
+- **HTML-Seiten:** 16+ responsive Webseiten
+- **CSS-Stylesheets:** 16+ Design-Implementierungen
 - **Größtes Projekt:** HTML Canvas Game (226 Zeilen)
+- **API-Integration:** Virtual Crypto Trader (202 Zeilen mit Live-Daten)
 - **Komplexestes Backend:** Express.js mit MVC-Pattern
 
 ### Technologie-Stack
