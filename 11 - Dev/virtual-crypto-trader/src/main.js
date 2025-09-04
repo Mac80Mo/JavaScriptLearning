@@ -5,6 +5,10 @@ let data;
 
 await refresh();
 
+async function refreshClickHandler(event) {
+  await refresh();
+}
+
 async function refresh() {
   data = await fetchData();
 
@@ -13,6 +17,9 @@ async function refresh() {
 }
 
 function renderStatus(_balance, data) {
+  const refreshButtonOld = document.getElementById("refreshButton");
+  refreshButtonOld?.removeEventListener("click", refreshClickHandler);
+
   const statusDiv = document.getElementById("status");
   statusDiv.innerHTML = `<h2>Status</h2>
   <p>Balance: ${_balance}</p>
@@ -20,9 +27,7 @@ function renderStatus(_balance, data) {
   <button id="refreshButton">Refresh</button>`;
 
   const refreshButton = document.getElementById("refreshButton");
-  refreshButton.addEventListener("click", async (event) => {
-    await refresh();
-  });
+  refreshButton.addEventListener("click", refreshClickHandler);
 }
 
 function getPortfolioValue(data) {
@@ -56,7 +61,10 @@ function renderTable(_data) {
         <td>${coinData.symbol}</td>
         <td>${coinData.quotes.USD.price}</td>
         <td>${coinAmounts.get(coinData.symbol) ?? 0}</td>
-        <td><button onclick="buyCoin('${coinData.symbol}')">Buy</button></td>
+        <td>
+          <button onclick="buyCoin('${coinData.symbol}')">Buy</button>
+          <button onclick="sellCoin('${coinData.symbol}')">Sell</button>
+        </td>
       </tr>`;
     });
 
@@ -83,7 +91,9 @@ async function fetchData() {
   return dataResponse; // Direkt die gesamte Antwort zurückgeben
 }
 
-function buyCoin(symbol) {
+async function buyCoin(symbol) {
+  await refresh();
+
   const amountString = prompt("Buying " + symbol);
   const amount = parseFloat(amountString);
   if (Number.isNaN(amount)) {
@@ -95,7 +105,14 @@ function buyCoin(symbol) {
   }
 
   const coinData = data.find((coin) => coin.symbol === symbol);
-  balance = balance - amount * parseFloat(coinData.quotes.USD.price);
+  const balanceNew = balance - amount * parseFloat(coinData.quotes.USD.price);
+
+  if (balanceNew < 0) {
+    alert("Not enough balance!");
+    return;
+  }
+
+  balance = balanceNew;
 
   let oldAmount = coinAmounts.get(symbol);
   if (oldAmount === undefined) {
@@ -103,8 +120,39 @@ function buyCoin(symbol) {
   }
   coinAmounts.set(symbol, oldAmount + amount);
 
-  renderStatus(balance, data);
-  renderTable(data);
+  await refresh();
+}
+
+async function sellCoin(symbol) {
+  await refresh();
+
+  const amountString = prompt("Selling " + symbol);
+  const amount = parseFloat(amountString);
+  if (Number.isNaN(amount)) {
+    return;
+  }
+
+  if (amount <= 0) {
+    return;
+  }
+
+  let oldAmount = coinAmounts.get(symbol);
+  if (oldAmount === undefined) {
+    oldAmount = 0;
+  }
+
+  if (amount > oldAmount) {
+    alert("Not enough coins in wallet!");
+    return;
+  }
+
+  const coinData = data.find((coin) => coin.symbol === symbol);
+  balance = balance + amount * parseFloat(coinData.quotes.USD.price);
+
+  coinAmounts.set(symbol, oldAmount - amount);
+
+  await refresh();
 }
 
 globalThis.buyCoin = buyCoin;
+globalThis.sellCoin = sellCoin;
