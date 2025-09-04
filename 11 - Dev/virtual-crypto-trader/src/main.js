@@ -1,12 +1,22 @@
+// Liste der anzuzeigenden Kryptowährungen
 const coinsToDisplay = ["BTC", "ETH", "XRP", "XLM", "ADA"];
+
+// Startguthaben
 let balance = 100000;
+
+// Map zur Speicherung der Menge an Coins, die der Nutzer besitzt
 let coinAmounts = new Map();
+
+// Variable für die abgerufenen Daten
 let data;
 
+// Lädt gespeicherte Spieldaten aus dem Local Storage
 loadGameData();
 
+// Aktualisiert die Daten beim Start
 await refresh();
 
+// Speichert den aktuellen Spielstand im Local Storage
 function saveGameData() {
   localStorage.setItem("balance", JSON.stringify(balance));
   localStorage.setItem(
@@ -15,6 +25,7 @@ function saveGameData() {
   );
 }
 
+// Lädt den Spielstand aus dem Local Storage
 function loadGameData() {
   const loadedBalance = JSON.parse(localStorage.getItem("balance"));
 
@@ -26,10 +37,12 @@ function loadGameData() {
   coinAmounts = new Map(JSON.parse(coinAmountsString));
 }
 
+// Event-Handler für den Refresh-Button
 async function refreshClickHandler(event) {
   await refresh();
 }
 
+// Aktualisiert die Daten und rendert die Benutzeroberfläche
 async function refresh() {
   data = await fetchData();
 
@@ -37,6 +50,7 @@ async function refresh() {
   renderTable(data);
 }
 
+// Rendert den Statusbereich (Balance und Portfolio-Wert)
 function renderStatus(_balance, data) {
   const refreshButtonOld = document.getElementById("refreshButton");
   refreshButtonOld?.removeEventListener("click", refreshClickHandler);
@@ -51,6 +65,7 @@ function renderStatus(_balance, data) {
   refreshButton.addEventListener("click", refreshClickHandler);
 }
 
+// Berechnet den Gesamtwert des Portfolios basierend auf den aktuellen Preisen
 function getPortfolioValue(data) {
   let sum = 0;
   for (const entry of coinAmounts.entries()) {
@@ -63,6 +78,7 @@ function getPortfolioValue(data) {
   return sum;
 }
 
+// Rendert die Tabelle mit den Kryptowährungen und den Aktionen
 function renderTable(_data) {
   let output = `<table>
 <tr>
@@ -72,7 +88,7 @@ function renderTable(_data) {
   <th>Actions</th>
 </tr>`;
 
-  // Filtere die Daten und wende anschließend forEach an
+  // Filtert die Daten und fügt sie der Tabelle hinzu
   data
     .filter((coinData) => coinsToDisplay.includes(coinData.symbol))
     .forEach((coinData) => {
@@ -95,6 +111,7 @@ function renderTable(_data) {
   appDiv.innerHTML = output;
 }
 
+// Ruft die aktuellen Kryptowährungsdaten von der API ab
 async function fetchData() {
   const response = await fetch(
     "https://api.coinpaprika.com/v1/tickers?quotes=USD"
@@ -109,9 +126,10 @@ async function fetchData() {
     console.log("Fehler beim Abrufen der Daten:", err);
   }
 
-  return dataResponse; // Direkt die gesamte Antwort zurückgeben
+  return dataResponse; // Gibt die gesamte Antwort zurück
 }
 
+// Funktion zum Kaufen von Coins
 async function buyCoin(symbol) {
   await refresh();
 
@@ -145,6 +163,7 @@ async function buyCoin(symbol) {
   saveGameData();
 }
 
+// Funktion zum Verkaufen von Coins
 async function sellCoin(symbol) {
   await refresh();
 
@@ -177,5 +196,6 @@ async function sellCoin(symbol) {
   saveGameData();
 }
 
+// Macht die Funktionen global verfügbar, damit sie in HTML-Buttons verwendet werden können
 globalThis.buyCoin = buyCoin;
 globalThis.sellCoin = sellCoin;
