@@ -1,9 +1,30 @@
 const coinsToDisplay = ["BTC", "ETH", "XRP", "XLM", "ADA"];
 let balance = 100000;
-const coinAmounts = new Map();
+let coinAmounts = new Map();
 let data;
 
+loadGameData();
+
 await refresh();
+
+function saveGameData() {
+  localStorage.setItem("balance", JSON.stringify(balance));
+  localStorage.setItem(
+    "coinAmounts",
+    JSON.stringify(Array.from(coinAmounts.entries()))
+  );
+}
+
+function loadGameData() {
+  const loadedBalance = JSON.parse(localStorage.getItem("balance"));
+
+  if (loadedBalance !== null) {
+    balance = loadedBalance;
+  }
+
+  const coinAmountsString = localStorage.getItem("coinAmounts");
+  coinAmounts = new Map(JSON.parse(coinAmountsString));
+}
 
 async function refreshClickHandler(event) {
   await refresh();
@@ -121,6 +142,7 @@ async function buyCoin(symbol) {
   coinAmounts.set(symbol, oldAmount + amount);
 
   await refresh();
+  saveGameData();
 }
 
 async function sellCoin(symbol) {
@@ -152,6 +174,7 @@ async function sellCoin(symbol) {
   coinAmounts.set(symbol, oldAmount - amount);
 
   await refresh();
+  saveGameData();
 }
 
 globalThis.buyCoin = buyCoin;
