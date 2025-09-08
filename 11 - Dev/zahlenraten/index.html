@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahlenratespiel mit Knockout.js</title>
+</head>
+
+<body>
+    <div>
+        <p>Errate die Zahl zwischen 1 und 100!</p>
+        <input type="number" data-bind="value: guess" />
+        <button data-bind="click: checkGuess">Raten</button>
+        <p data-bind="text: numberOfTries"></p>
+        <p style="font-weight: bold; font-size: 1.5rem" data-bind="text: message"></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
