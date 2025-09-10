@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#" type="image/x-icon">
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div x-data="numberGuessingGame()">
+        <h1>Zahlenratespiel mit Alpine JS</h1>
+        <p>Errate die Zahl zwischen 1 und 100!</p>
+
+        <input type="number" x-model="guess" placeholder="message">
+        <button @click="checkGuess()">Rate!</button>
+
+        <div>Versuche: <span x-text="tries"></span></div>
+        <div x-text="message"></div>
+
+        <button style="margin-top: 20px" @click="resetGame()">Neues Spiel</button>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
