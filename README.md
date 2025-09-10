@@ -8,9 +8,9 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 
 - **Grundlagen:** 6 Basis-Dateien mit fundamentalen Konzepten
 - **Frontend-Projekte:** 10 interaktive Web-Anwendungen
-- **Development-Projekte:** 4 Vite-basierte moderne Projekte
+- **Development-Projekte:** 6 moderne Projekte (4 Vite-basiert, 2 Framework-Ratespiele)
 - **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine
-- **Gesamtprojekte:** 21+ Dateien mit verschiedenen Komplexitätsgraden
+- **Gesamtprojekte:** 23+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -167,6 +167,34 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Konzepte:** Async/Await, API Integration, Map Data Structure, Local Storage, Financial Logic
 - **API:** CoinPaprika REST API für Live-Marktdaten
 - **Schwierigkeit:** ⭐⭐⭐⭐ Master
+
+### [Zahlenratespiel - Knockout.js](11%20-%20Dev/zahlenraten/)
+
+**Ratespiel mit Knockout.js Framework**
+
+- **Technologie:** Knockout.js, MVVM Pattern
+- **Dateien:** [`index.html`](11%20-%20Dev/zahlenraten/index.html), [`main.js`](11%20-%20Dev/zahlenraten/main.js)
+- **Features:**
+  - Data-Binding mit Knockout.js Observables
+  - Automatisches UI-Update bei Datenänderungen
+  - Zahlenbereich 1-100 mit Feedback-System
+  - Versuchszähler und automatischer Neustart
+- **Konzepte:** MVVM Pattern, Data-Binding, Observables, CDN Integration
+- **Schwierigkeit:** ⭐⭐ Fortgeschritten
+
+### [Zahlenratespiel - Alpine.js](11%20-%20Dev/zahlenraten_AlpineJS/)
+
+**Ratespiel mit Alpine.js Framework**
+
+- **Technologie:** Alpine.js, Reactive Directives
+- **Dateien:** [`index.html`](11%20-%20Dev/zahlenraten_AlpineJS/index.html), [`main.js`](11%20-%20Dev/zahlenraten_AlpineJS/main.js)
+- **Features:**
+  - Reactive Data-Binding mit x-model und x-text Directives
+  - Event-Handling mit @click Direktiven
+  - Zahlenbereich 1-100 mit intelligenter Validierung
+  - Reset-Funktion für neues Spiel
+- **Konzepte:** Alpine.js Directives, Reactive Programming, Component Functions
+- **Schwierigkeit:** ⭐⭐ Fortgeschritten
 
 ## 🖥️ Backend-Projekt (12 - ExpressBasics)
 
@@ -545,10 +573,11 @@ npm run dev
 
 ### Codebase Übersicht
 
-- **Gesamtprojekte:** 21+ individuelle Anwendungen
-- **JavaScript-Dateien:** 26+ Skript-Dateien
-- **HTML-Seiten:** 16+ responsive Webseiten
+- **Gesamtprojekte:** 23+ individuelle Anwendungen
+- **JavaScript-Dateien:** 28+ Skript-Dateien
+- **HTML-Seiten:** 18+ responsive Webseiten
 - **CSS-Stylesheets:** 16+ Design-Implementierungen
+- **Framework-Projekte:** 2 Ratespiele (Knockout.js, Alpine.js)
 - **Größtes Projekt:** HTML Canvas Game (226 Zeilen)
 - **API-Integration:** Virtual Crypto Trader (202 Zeilen mit Live-Daten)
 - **Komplexestes Backend:** Express.js mit MVC-Pattern
@@ -557,6 +586,7 @@ npm run dev
 
 ```
 Frontend:        HTML5, CSS3, Vanilla JavaScript, Canvas API
+Frameworks:      Knockout.js, Alpine.js
 Build Tools:     Vite, npm, nodemon
 Backend:         Node.js, Express.js
 Template Engine: EJS mit Layouts & Partials
