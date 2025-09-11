@@ -8,9 +8,9 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 
 - **Grundlagen:** 6 Basis-Dateien mit fundamentalen Konzepten
 - **Frontend-Projekte:** 10 interaktive Web-Anwendungen
-- **Development-Projekte:** 6 moderne Projekte (4 Vite-basiert, 2 Framework-Ratespiele)
+- **Development-Projekte:** 7 moderne Projekte (5 Vite-basiert, 2 Framework-Ratespiele, 1 Module-System)
 - **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine
-- **Gesamtprojekte:** 23+ Dateien mit verschiedenen Komplexitätsgraden
+- **Gesamtprojekte:** 24+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -196,6 +196,33 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Konzepte:** Alpine.js Directives, Reactive Programming, Component Functions
 - **Schwierigkeit:** ⭐⭐ Fortgeschritten
 
+### [JavaScript Module System](11%20-%20Dev/Module/modules/)
+
+**Moderne ES6 Module-Entwicklung mit npm und Build-Tools**
+
+- **Technologie:** Vite, ES6 Modules, npm Package Management
+- **Dateien:** [`main.js`](11%20-%20Dev/Module/modules/src/main.js), [`counter.js`](11%20-%20Dev/Module/modules/src/counter.js), [`package.json`](11%20-%20Dev/Module/modules/package.json)
+- **Features:**
+  - **ES6 Module Import/Export** - Modulare Code-Organisation
+  - **npm Package Integration** - Lodash als externe Dependency
+  - **Dynamic Imports** - Asynchrones Laden von Modulen mit `import()`
+  - **Build Pipeline** - Vite für Development und Production
+  - **Live Server Kompatibilität** - Relative Pfade für statisches Hosting
+- **Konzepte:**
+  - Module-System mit import/export Statements
+  - Package.json Dependencies Management
+  - Build-Konfiguration mit `--base=./` für relative Pfade
+  - Dynamic Import für Code-Splitting
+  - Deep Clone Operations mit Lodash
+- **Build Commands:**
+  ```bash
+  npm install          # Dependencies installieren
+  npm run dev         # Development Server
+  npm run build       # Production Build für Live Server
+  ```
+- **Live Server Fix:** Relative Pfade durch `--base=./` Build-Option
+- **Schwierigkeit:** ⭐⭐⭐ Experte
+
 ## 🖥️ Backend-Projekt (12 - ExpressBasics)
 
 ### [Express.js Server Application](12%20-%20ExpressBasics/)
@@ -277,12 +304,13 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 
 ### Development Tools
 
-| Tool        | Status | Verwendung              |
-| ----------- | ------ | ----------------------- |
-| **Vite**    | ✅     | Modern Build Tool       |
-| **nodemon** | ✅     | Development Auto-Reload |
-| **EJS**     | ✅     | Server-Side Templating  |
-| **Git**     | ✅     | Version Control         |
+| Tool        | Status | Verwendung                   |
+| ----------- | ------ | ---------------------------- |
+| **Vite**    | ✅     | Modern Build Tool            |
+| **npm**     | ✅     | Package Management & Modules |
+| **nodemon** | ✅     | Development Auto-Reload      |
+| **EJS**     | ✅     | Server-Side Templating       |
+| **Git**     | ✅     | Version Control              |
 
 ## 🧠 Gelernte Konzepte & Patterns
 
@@ -308,11 +336,12 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 
 ### Modern JavaScript (ES6+)
 
-- ✅ **Module System** - import/export, ES Modules
+- ✅ **Module System** - import/export, ES Modules, Dynamic Imports
 - ✅ **Template Literals** - String Interpolation, Multi-line Strings
 - ✅ **Destructuring** - Array/Object Destructuring Assignment
 - ✅ **Spread Operator** - Array/Object Spreading, Rest Parameters
 - ✅ **Default Parameters** - Function Parameter Defaults
+- ✅ **Package Management** - npm, Dependencies, Build Tools
 
 ### Architecture Patterns
 
@@ -370,6 +399,19 @@ Vite Projects (11 - Dev)/
 │   └── style.css     # Styles
 └── public/           # Static Assets
 
+Module System Project (11 - Dev/Module/modules)/
+├── package.json      # npm Dependencies (lodash)
+├── vite.config.js    # Build Configuration
+├── index.html        # HTML Template
+├── src/
+│   ├── main.js       # Module Imports & Logic
+│   ├── counter.js    # Reusable Module
+│   └── style.css     # Styles
+├── dist/             # Build Output (für Live Server)
+│   ├── index.html    # Built HTML mit relativen Pfaden
+│   └── assets/       # Bundled JS/CSS
+└── public/           # Static Assets
+
 Express Project (12)/
 ├── server.js         # Main Server
 ├── package.json      # Backend Dependencies
@@ -406,6 +448,25 @@ npm run dev
 # Production Build erstellen
 npm run build
 npm run preview
+```
+
+### Module-System Projekt (11 - Dev/Module/modules)
+
+```bash
+# Dependencies installieren (inkl. lodash)
+cd "11 - Dev/Module/modules"
+npm install
+
+# Development Server mit Hot-Reload
+npm run dev
+# → http://localhost:5173
+
+# Production Build für Live Server
+npm run build
+# → Erstellt dist/ Ordner mit relativen Pfaden
+
+# Live Server direkt im dist/ Ordner starten
+# oder index.html aus dist/ öffnen
 ```
 
 ### Express.js Backend (12)
@@ -463,13 +524,15 @@ npm run dev
 
 ### Phase 4: Modern Development (11 - Dev)
 
-**Zeitraum:** Woche 9-10  
-**Fokus:** Build Tools, Modern JavaScript
+**Zeitraum:** Woche 9-11  
+**Fokus:** Build Tools, Modern JavaScript, Module-System
 
 - Vite Build System
-- ES6 Modules
+- ES6 Modules & Dynamic Imports
+- npm Package Management
 - Development Workflow
 - Canvas & Game Development (226 Zeilen Spiel!)
+- Module System mit externen Dependencies
 
 ### Phase 5: Backend Integration (12)
 
@@ -484,7 +547,7 @@ npm run dev
 
 ## 🎮 Highlight-Projekte
 
-### 🏆 Top 5 Technisch Anspruchsvolle Projekte
+### 🏆 Top 6 Technisch Anspruchsvolle Projekte
 
 1. **🎯 HTML Canvas Game** (11 - Dev/html-canvas)
 
@@ -509,14 +572,23 @@ npm run dev
    - Real-time Data Processing
    - **Schwierigkeit:** Master Level
 
-4. **🏦 Geldautomat** (06 - Geldautomat)
+4. **📦 JavaScript Module System** (11 - Dev/Module/modules)
+
+   - ES6 Module Import/Export System
+   - npm Package Management mit Lodash
+   - Dynamic Imports & Code-Splitting
+   - Build Pipeline für Live Server Deployment
+   - Relative Path Configuration
+   - **Schwierigkeit:** Expert Level
+
+5. **🏦 Geldautomat** (06 - Geldautomat)
 
    - Financial Transaction Logic
    - State Management & History
    - Complex DOM Updates
    - **Schwierigkeit:** Expert Level
 
-5. **🖥️ Express.js Server** (12 - ExpressBasics)
+6. **🖥️ Express.js Server** (12 - ExpressBasics)
    - Full MVC Architecture
    - RESTful API Implementation
    - Template Engine Integration
@@ -531,6 +603,10 @@ npm run dev
 - **Arrow Functions** vs. **Function Declarations** - Scope-Unterschiede verstehen
 - **Canvas API** bietet mächtige Grafik-Möglichkeiten für Spiele
 - **Express.js Middleware** ermöglicht modulare, wiederverwendbare Funktionen
+- **ES6 Modules** schaffen saubere Code-Organisation und Wiederverwendbarkeit
+- **npm Package Management** ermöglicht Integration externer Libraries
+- **Dynamic Imports** für performantes Code-Splitting und Lazy Loading
+- **Build Tools** (Vite) optimieren Development-Workflow und Production-Builds
 
 ### 🎨 Design Patterns
 
@@ -573,11 +649,12 @@ npm run dev
 
 ### Codebase Übersicht
 
-- **Gesamtprojekte:** 23+ individuelle Anwendungen
-- **JavaScript-Dateien:** 28+ Skript-Dateien
-- **HTML-Seiten:** 18+ responsive Webseiten
-- **CSS-Stylesheets:** 16+ Design-Implementierungen
+- **Gesamtprojekte:** 24+ individuelle Anwendungen
+- **JavaScript-Dateien:** 30+ Skript-Dateien
+- **HTML-Seiten:** 19+ responsive Webseiten
+- **CSS-Stylesheets:** 17+ Design-Implementierungen
 - **Framework-Projekte:** 2 Ratespiele (Knockout.js, Alpine.js)
+- **Module-System:** ES6 Modules mit npm Package Management
 - **Größtes Projekt:** HTML Canvas Game (226 Zeilen)
 - **API-Integration:** Virtual Crypto Trader (202 Zeilen mit Live-Daten)
 - **Komplexestes Backend:** Express.js mit MVC-Pattern
@@ -587,19 +664,24 @@ npm run dev
 ```
 Frontend:        HTML5, CSS3, Vanilla JavaScript, Canvas API
 Frameworks:      Knockout.js, Alpine.js
+Module System:   ES6 Modules, Dynamic Imports, npm Packages
 Build Tools:     Vite, npm, nodemon
+External Deps:   Lodash (Deep Clone, Utilities)
 Backend:         Node.js, Express.js
 Template Engine: EJS mit Layouts & Partials
 Development:     VS Code, Live Server, Hot-Reload
 Version Control: Git, GitHub
+Deployment:      Static Hosting, Live Server kompatibel
 ```
 
 ### Lernfortschritt-Metriken
 
 - **Schwierigkeits-Steigerung:** Linear von ⭐ bis ⭐⭐⭐⭐⭐
 - **Code-Komplexität:** Von 10 Zeilen bis 226+ Zeilen
-- **Konzepte abgedeckt:** 40+ JavaScript/Web-Development Konzepte
-- **Projekte mit persistenter Datenhaltung:** 8/20 (localStorage + Backend)
+- **Konzepte abgedeckt:** 45+ JavaScript/Web-Development Konzepte
+- **Projekte mit persistenter Datenhaltung:** 8/24 (localStorage + Backend)
+- **Module-System Integration:** ES6 Modules + npm Dependencies
+- **Build-Tools Erfahrung:** Vite Development & Production Workflow
 
 ## 🏅 Achievements Unlocked
 
@@ -611,6 +693,9 @@ Version Control: Git, GitHub
 - ✅ **Form Validator** - Komplexe Formular-Validierung mit RegExp
 - ✅ **Game Developer** - Canvas-basierte Spiel-Entwicklung
 - ✅ **Storage Specialist** - localStorage und Session-Management
+- ✅ **Module Architect** - ES6 Modules, Dynamic Imports, Code-Splitting
+- ✅ **Package Manager** - npm Dependencies, Build Workflows
+- ✅ **Build Tool Expert** - Vite Configuration, Production Optimization
 
 ### Full-Stack Developer
 
@@ -632,7 +717,7 @@ Version Control: Git, GitHub
 
 Dieses Repository dokumentiert meinen JavaScript-Lernweg von den absoluten Grundlagen bis hin zu modernen Full-Stack-Anwendungen.
 
-**Entwicklungszeit:** ~12 Wochen intensive JavaScript-Entwicklung  
+**Entwicklungszeit:** ~13 Wochen intensive JavaScript-Entwicklung  
 **Repository:** [JavaScriptCampus+](https://github.com/Mac80Mo/JavaScriptCampus10)  
 **Autor:** Mac80Mo
 
@@ -644,5 +729,7 @@ Feedback, Verbesserungsvorschläge und Code-Reviews sind herzlich willkommen! Be
 - Moderne JavaScript-Features (ES2024+)
 - Accessibility-Verbesserungen
 - Testing-Strategien für die Projekte
+- Module-System Best Practices
+- Build-Tool Optimierungen
 
-_"Von einfachen DOM-Manipulationen zu komplexen Full-Stack-Anwendungen - eine Reise durch moderne Web-Entwicklung."_ 🚀
+_"Von einfachen DOM-Manipulationen zu komplexen Full-Stack-Anwendungen und modernen Module-Systemen - eine Reise durch moderne Web-Entwicklung."_ 🚀
