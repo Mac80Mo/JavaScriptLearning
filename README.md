@@ -7,18 +7,11 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 ## 📊 Übersicht
 
 - **Grundlagen:** 6 Basis-Dateien mit fundamentalen Konzepten
-- **Frontend-Projekte:** 10 interaktive Web-Anwendungen
-- **Development-Projekte:** 7 moderne Projekte (5 Vite-basiert, 2 Framework-Ratespiele, 1 Module-System)
-- **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine
-- **AI-Integration:** 1 lokaler Chatbot mit Ollama/LLaMA
-- **Gesamtproj- **Fetch API\*\* bietet mächtige Grafik-Möglichkeiten für Spiele
-- **Express.js Middleware** ermöglicht modulare, wiederverwendbare Funktionen
-- **ES6 Modules** schaffen saubere Code-Organisation und Wiederverwendbarkeit
-- **npm Package Management** ermöglicht Integration externer Libraries
-- **Dynamic Imports** für performantes Code-Splitting und Lazy Loading
-- **Build Tools** (Vite) optimieren Development-Workflow und Production-Builds
-- **AI Integration** mit lokalen Modellen ermöglicht Privacy-First Chatbots
-- **Stream Processing** für Real-time AI-Antworten ohne Blockierung der UI\* 25+ Dateien mit verschiedenen Komplexitätsgraden
+- **Frontend-Projekte:** 10 interaktive Web-Anwendungen (01-10)
+- **Development-Projekte:** 7 moderne Projekte im Dev-Ordner (11)
+- **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine (12)
+- **AI-Integration:** 1 lokaler Chatbot mit Ollama/LLaMA (13)
+- **Gesamtprojekte:** 25+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -160,25 +153,6 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Konzepte:** Canvas 2D Context, Animation Loops, Game States
 - **Schwierigkeit:** ⭐⭐⭐⭐⭐ Expert+
 
-## 🤖 AI-Integration Projekt (13 - Chatbot-local)
-
-### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
-
-**KI-basierte Chatanwendung mit lokalem LLaMA Modell**
-
-- **Technologie:** Vanilla JavaScript, Ollama API, LLaMA 3.2
-- **Dateien:** [`index.html`](13%20-%20Chatbot-local/index.html), [`script.js`](13%20-%20Chatbot-local/script.js), [`style.css`](13%20-%20Chatbot-local/style.css)
-- **Features:**
-  - Chat-Interface mit Markdown-Rendering
-  - Lokale KI-Integration via Ollama
-  - Stream-basierte Antworten (real-time)
-  - Chat-Historie mit localStorage
-  - Responsive Design mit modernem UI
-  - Error-Handling für API-Verbindungen
-- **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
-- **Requirements:** Ollama Server mit LLaMA Modell
-- **Schwierigkeit:** ⭐⭐⭐⭐ Master
-
 ### [Virtual Crypto Trader](11%20-%20Dev/virtual-crypto-trader/)
 
 **Kryptowährungs-Trading Simulator**
@@ -249,6 +223,25 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
   ```
 - **Live Server Fix:** Relative Pfade durch `--base=./` Build-Option
 - **Schwierigkeit:** ⭐⭐⭐ Experte
+
+## 🤖 AI-Integration Projekt (13 - Chatbot-local)
+
+### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
+
+**KI-basierte Chatanwendung mit lokalem LLaMA Modell**
+
+- **Technologie:** Vanilla JavaScript, Ollama API, LLaMA 3.2
+- **Dateien:** [`index.html`](13%20-%20Chatbot-local/index.html), [`script.js`](13%20-%20Chatbot-local/script.js), [`style.css`](13%20-%20Chatbot-local/style.css)
+- **Features:**
+  - Chat-Interface mit Markdown-Rendering
+  - Lokale KI-Integration via Ollama
+  - Stream-basierte Antworten (real-time)
+  - Chat-Historie mit localStorage
+  - Responsive Design mit modernem UI
+  - Error-Handling für API-Verbindungen
+- **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
+- **Requirements:** Ollama Server mit LLaMA Modell
+- **Schwierigkeit:** ⭐⭐⭐⭐ Master
 
 ## 🖥️ Backend-Projekt (12 - ExpressBasics)
 
@@ -573,19 +566,22 @@ npm run dev
 - RESTful API Design
 - MVC Architecture
 
+### Phase 6: AI Integration (13)
+
+**Zeitraum:** Woche 12-13  
+**Fokus:** AI-Integration und lokale KI-Modelle
+
+- Ollama API Integration
+- Stream-Processing für Real-time AI
+- Lokale LLaMA Modelle
+- Chat-Interface Development
+- Error-Handling für AI-Services
+
 ## 🎮 Highlight-Projekte
 
 ### 🏆 Top 7 Technisch Anspruchsvolle Projekte
 
-1. **🤖 Lokaler Chatbot** (13 - Chatbot-local)
-
-   - KI-Integration mit Ollama/LLaMA 3.2
-   - Stream-basierte API-Kommunikation
-   - Real-time Chat-Interface mit Markdown
-   - Error-Handling für lokale KI-Services
-   - **Schwierigkeit:** Master Level
-
-2. **🎯 HTML Canvas Game** (11 - Dev/html-canvas)
+1. **🎯 HTML Canvas Game** (11 - Dev/html-canvas)
 
    - 226 Zeilen komplexer JavaScript-Code
    - Collision Detection & Physics
@@ -593,19 +589,27 @@ npm run dev
    - Power-Up System & Score-Management
    - **Schwierigkeit:** Expert+ Level
 
-3. **🎬 Filmdatenbank** (10 - Filmdatenbank)
+2. **🤖 Lokaler Chatbot** (13 - Chatbot-local)
 
-   - CRUD-Operationen mit Array-Methods
-   - Advanced Filtering & Sorting
-   - Search Implementation
+   - KI-Integration mit Ollama/LLaMA 3.2
+   - Stream-basierte API-Kommunikation
+   - Real-time Chat-Interface mit Markdown
+   - Error-Handling für lokale KI-Services
    - **Schwierigkeit:** Master Level
 
-4. **💰 Virtual Crypto Trader** (11 - Dev/virtual-crypto-trader)
+3. **💰 Virtual Crypto Trader** (11 - Dev/virtual-crypto-trader)
 
    - Live API-Integration mit CoinPaprika
    - 202 Zeilen komplexe Trading-Logic
    - Portfolio-Management & Balance-Tracking
    - Real-time Data Processing
+   - **Schwierigkeit:** Master Level
+
+4. **🎬 Filmdatenbank** (10 - Filmdatenbank)
+
+   - CRUD-Operationen mit Array-Methods
+   - Advanced Filtering & Sorting
+   - Search Implementation
    - **Schwierigkeit:** Master Level
 
 5. **📦 JavaScript Module System** (11 - Dev/Module/modules)
@@ -686,11 +690,15 @@ npm run dev
 ### Codebase Übersicht
 
 - **Gesamtprojekte:** 25+ individuelle Anwendungen
+- **Grundlagen (00):** 7 fundamentale JavaScript-Dateien
+- **Frontend-Projekte (01-10):** 10 interaktive Web-Anwendungen
+- **Development-Projekte (11):** 7 moderne Projekte mit Build-Tools
+- **Backend-Projekt (12):** 1 Express.js Server mit MVC-Pattern
+- **AI-Integration (13):** 1 lokaler Chatbot mit Ollama
 - **JavaScript-Dateien:** 31+ Skript-Dateien
 - **HTML-Seiten:** 20+ responsive Webseiten
 - **CSS-Stylesheets:** 18+ Design-Implementierungen
 - **Framework-Projekte:** 2 Ratespiele (Knockout.js, Alpine.js)
-- **AI-Integration:** 1 lokaler Chatbot mit Ollama
 - **Module-System:** ES6 Modules mit npm Package Management
 - **Größtes Projekt:** HTML Canvas Game (226 Zeilen)
 - **API-Integration:** Virtual Crypto Trader (202 Zeilen mit Live-Daten)
