@@ -4,7 +4,7 @@ Ein eleganter, lokaler Chatbot, der mit Ollama und dem Llama 3.2 Modell arbeitet
 
 ## 📸 Projektvorschau
 
-![Chatbot Screenshot](screenshot.png)
+![Chatbot Screenshot](Screenshot.png)
 
 ## 📋 Projektübersicht
 
