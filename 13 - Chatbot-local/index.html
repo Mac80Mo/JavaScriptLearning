@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot Ollama</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>lokaler ChatBot</header>
+    <div class="container mt-16" id="msgContainer">
+        <div class="msg">Hi. Bitte stellen Sie mir eine Frage. Ich verwende aktuell das lokale Llama 3.2 Modell.</div>
+        <button class="scroll-to-bottom" id="scrollToBottomBtn" onclick="scrollToBottomForced()">↓</button>
+    </div>
+    <footer class="chat-footer">
+        <form class="footer-form" onsubmit="postChatMessage(); return false;">
+            <input type="text" autocomplete="off" placeholder="Bitte geben Sie hier Ihre Frage ein..." id="chatField">
+            <button id="sendButton">Fragen</button>
+            <button type="button" id="clearButton" onclick="clearChat()" title="Chat leeren">Löschen</button>
+        </form>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>

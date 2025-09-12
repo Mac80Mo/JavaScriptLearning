@@ -10,7 +10,15 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Frontend-Projekte:** 10 interaktive Web-Anwendungen
 - **Development-Projekte:** 7 moderne Projekte (5 Vite-basiert, 2 Framework-Ratespiele, 1 Module-System)
 - **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine
-- **Gesamtprojekte:** 24+ Dateien mit verschiedenen Komplexitätsgraden
+- **AI-Integration:** 1 lokaler Chatbot mit Ollama/LLaMA
+- **Gesamtproj- **Fetch API\*\* bietet mächtige Grafik-Möglichkeiten für Spiele
+- **Express.js Middleware** ermöglicht modulare, wiederverwendbare Funktionen
+- **ES6 Modules** schaffen saubere Code-Organisation und Wiederverwendbarkeit
+- **npm Package Management** ermöglicht Integration externer Libraries
+- **Dynamic Imports** für performantes Code-Splitting und Lazy Loading
+- **Build Tools** (Vite) optimieren Development-Workflow und Production-Builds
+- **AI Integration** mit lokalen Modellen ermöglicht Privacy-First Chatbots
+- **Stream Processing** für Real-time AI-Antworten ohne Blockierung der UI\* 25+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -152,6 +160,25 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Konzepte:** Canvas 2D Context, Animation Loops, Game States
 - **Schwierigkeit:** ⭐⭐⭐⭐⭐ Expert+
 
+## 🤖 AI-Integration Projekt (13 - Chatbot-local)
+
+### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
+
+**KI-basierte Chatanwendung mit lokalem LLaMA Modell**
+
+- **Technologie:** Vanilla JavaScript, Ollama API, LLaMA 3.2
+- **Dateien:** [`index.html`](13%20-%20Chatbot-local/index.html), [`script.js`](13%20-%20Chatbot-local/script.js), [`style.css`](13%20-%20Chatbot-local/style.css)
+- **Features:**
+  - Chat-Interface mit Markdown-Rendering
+  - Lokale KI-Integration via Ollama
+  - Stream-basierte Antworten (real-time)
+  - Chat-Historie mit localStorage
+  - Responsive Design mit modernem UI
+  - Error-Handling für API-Verbindungen
+- **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
+- **Requirements:** Ollama Server mit LLaMA Modell
+- **Schwierigkeit:** ⭐⭐⭐⭐ Master
+
 ### [Virtual Crypto Trader](11%20-%20Dev/virtual-crypto-trader/)
 
 **Kryptowährungs-Trading Simulator**
@@ -291,6 +318,7 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 | **Form Handling**     | ✅ Basic Input         | ✅ Validation        | ✅ RegExp                         | ✅ Custom Validation    |
 | **Storage APIs**      | ✅ localStorage        | ✅ sessionStorage    | ✅ Map/Set Collections            | ⏳ IndexedDB            |
 | **Canvas/Graphics**   | ⏳ Basic Drawing       | ✅ 2D Context        | ✅ Animation                      | ✅ Game Development     |
+| **AI Integration**    | ✅ REST APIs           | ✅ Stream Processing | ✅ Ollama/LLaMA                   | ⏳ Machine Learning     |
 
 ### Backend-Entwicklung
 
@@ -547,9 +575,17 @@ npm run dev
 
 ## 🎮 Highlight-Projekte
 
-### 🏆 Top 6 Technisch Anspruchsvolle Projekte
+### 🏆 Top 7 Technisch Anspruchsvolle Projekte
 
-1. **🎯 HTML Canvas Game** (11 - Dev/html-canvas)
+1. **🤖 Lokaler Chatbot** (13 - Chatbot-local)
+
+   - KI-Integration mit Ollama/LLaMA 3.2
+   - Stream-basierte API-Kommunikation
+   - Real-time Chat-Interface mit Markdown
+   - Error-Handling für lokale KI-Services
+   - **Schwierigkeit:** Master Level
+
+2. **🎯 HTML Canvas Game** (11 - Dev/html-canvas)
 
    - 226 Zeilen komplexer JavaScript-Code
    - Collision Detection & Physics
@@ -557,14 +593,14 @@ npm run dev
    - Power-Up System & Score-Management
    - **Schwierigkeit:** Expert+ Level
 
-2. **🎬 Filmdatenbank** (10 - Filmdatenbank)
+3. **🎬 Filmdatenbank** (10 - Filmdatenbank)
 
    - CRUD-Operationen mit Array-Methods
    - Advanced Filtering & Sorting
    - Search Implementation
    - **Schwierigkeit:** Master Level
 
-3. **💰 Virtual Crypto Trader** (11 - Dev/virtual-crypto-trader)
+4. **💰 Virtual Crypto Trader** (11 - Dev/virtual-crypto-trader)
 
    - Live API-Integration mit CoinPaprika
    - 202 Zeilen komplexe Trading-Logic
@@ -572,7 +608,7 @@ npm run dev
    - Real-time Data Processing
    - **Schwierigkeit:** Master Level
 
-4. **📦 JavaScript Module System** (11 - Dev/Module/modules)
+5. **📦 JavaScript Module System** (11 - Dev/Module/modules)
 
    - ES6 Module Import/Export System
    - npm Package Management mit Lodash
@@ -581,14 +617,14 @@ npm run dev
    - Relative Path Configuration
    - **Schwierigkeit:** Expert Level
 
-5. **🏦 Geldautomat** (06 - Geldautomat)
+6. **🏦 Geldautomat** (06 - Geldautomat)
 
    - Financial Transaction Logic
    - State Management & History
    - Complex DOM Updates
    - **Schwierigkeit:** Expert Level
 
-6. **🖥️ Express.js Server** (12 - ExpressBasics)
+7. **🖥️ Express.js Server** (12 - ExpressBasics)
    - Full MVC Architecture
    - RESTful API Implementation
    - Template Engine Integration
@@ -649,11 +685,12 @@ npm run dev
 
 ### Codebase Übersicht
 
-- **Gesamtprojekte:** 24+ individuelle Anwendungen
-- **JavaScript-Dateien:** 30+ Skript-Dateien
-- **HTML-Seiten:** 19+ responsive Webseiten
-- **CSS-Stylesheets:** 17+ Design-Implementierungen
+- **Gesamtprojekte:** 25+ individuelle Anwendungen
+- **JavaScript-Dateien:** 31+ Skript-Dateien
+- **HTML-Seiten:** 20+ responsive Webseiten
+- **CSS-Stylesheets:** 18+ Design-Implementierungen
 - **Framework-Projekte:** 2 Ratespiele (Knockout.js, Alpine.js)
+- **AI-Integration:** 1 lokaler Chatbot mit Ollama
 - **Module-System:** ES6 Modules mit npm Package Management
 - **Größtes Projekt:** HTML Canvas Game (226 Zeilen)
 - **API-Integration:** Virtual Crypto Trader (202 Zeilen mit Live-Daten)
@@ -667,6 +704,7 @@ Frameworks:      Knockout.js, Alpine.js
 Module System:   ES6 Modules, Dynamic Imports, npm Packages
 Build Tools:     Vite, npm, nodemon
 External Deps:   Lodash (Deep Clone, Utilities)
+AI Integration:  Ollama, LLaMA 3.2, Stream Processing
 Backend:         Node.js, Express.js
 Template Engine: EJS mit Layouts & Partials
 Development:     VS Code, Live Server, Hot-Reload
@@ -678,9 +716,10 @@ Deployment:      Static Hosting, Live Server kompatibel
 
 - **Schwierigkeits-Steigerung:** Linear von ⭐ bis ⭐⭐⭐⭐⭐
 - **Code-Komplexität:** Von 10 Zeilen bis 226+ Zeilen
-- **Konzepte abgedeckt:** 45+ JavaScript/Web-Development Konzepte
-- **Projekte mit persistenter Datenhaltung:** 8/24 (localStorage + Backend)
+- **Konzepte abgedeckt:** 50+ JavaScript/Web-Development Konzepte
+- **Projekte mit persistenter Datenhaltung:** 9/25 (localStorage + Backend)
 - **Module-System Integration:** ES6 Modules + npm Dependencies
+- **AI-Integration:** Lokale KI-Modelle mit Stream-Processing
 - **Build-Tools Erfahrung:** Vite Development & Production Workflow
 
 ## 🏅 Achievements Unlocked
@@ -696,6 +735,7 @@ Deployment:      Static Hosting, Live Server kompatibel
 - ✅ **Module Architect** - ES6 Modules, Dynamic Imports, Code-Splitting
 - ✅ **Package Manager** - npm Dependencies, Build Workflows
 - ✅ **Build Tool Expert** - Vite Configuration, Production Optimization
+- ✅ **AI Integrator** - Lokale KI-Modelle, Stream-Processing, Ollama API
 
 ### Full-Stack Developer
 
