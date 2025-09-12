@@ -224,25 +224,6 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Live Server Fix:** Relative Pfade durch `--base=./` Build-Option
 - **Schwierigkeit:** ⭐⭐⭐ Experte
 
-## 🤖 AI-Integration Projekt (13 - Chatbot-local)
-
-### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
-
-**KI-basierte Chatanwendung mit lokalem LLaMA Modell**
-
-- **Technologie:** Vanilla JavaScript, Ollama API, LLaMA 3.2
-- **Dateien:** [`index.html`](13%20-%20Chatbot-local/index.html), [`script.js`](13%20-%20Chatbot-local/script.js), [`style.css`](13%20-%20Chatbot-local/style.css)
-- **Features:**
-  - Chat-Interface mit Markdown-Rendering
-  - Lokale KI-Integration via Ollama
-  - Stream-basierte Antworten (real-time)
-  - Chat-Historie mit localStorage
-  - Responsive Design mit modernem UI
-  - Error-Handling für API-Verbindungen
-- **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
-- **Requirements:** Ollama Server mit LLaMA Modell
-- **Schwierigkeit:** ⭐⭐⭐⭐ Master
-
 ## 🖥️ Backend-Projekt (12 - ExpressBasics)
 
 ### [Express.js Server Application](12%20-%20ExpressBasics/)
@@ -294,6 +275,25 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 
 - **Port:** 3000
 - **Environment:** Development mit Hot-Reload
+- **Schwierigkeit:** ⭐⭐⭐⭐ Master
+
+## 🤖 AI-Integration Projekt (13 - Chatbot-local)
+
+### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
+
+**KI-basierte Chatanwendung mit lokalem LLaMA Modell**
+
+- **Technologie:** Vanilla JavaScript, Ollama API, LLaMA 3.2
+- **Dateien:** [`index.html`](13%20-%20Chatbot-local/index.html), [`script.js`](13%20-%20Chatbot-local/script.js), [`style.css`](13%20-%20Chatbot-local/style.css)
+- **Features:**
+  - Chat-Interface mit Markdown-Rendering
+  - Lokale KI-Integration via Ollama
+  - Stream-basierte Antworten (real-time)
+  - Chat-Historie mit localStorage
+  - Responsive Design mit modernem UI
+  - Error-Handling für API-Verbindungen
+- **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
+- **Requirements:** Ollama Server mit LLaMA Modell
 - **Schwierigkeit:** ⭐⭐⭐⭐ Master
 
 ## 🎯 Technische Kompetenz-Matrix
