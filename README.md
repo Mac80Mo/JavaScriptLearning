@@ -10,8 +10,8 @@ Dieses Repository dokumentiert meinen umfassenden Lernweg durch die JavaScript-E
 - **Frontend-Projekte:** 10 interaktive Web-Anwendungen (01-10)
 - **Development-Projekte:** 7 moderne Projekte im Dev-Ordner (11)
 - **Backend-Projekt:** 1 Express.js Server mit EJS Template Engine (12)
-- **AI-Integration:** 1 lokaler Chatbot mit Ollama/LLaMA (13)
-- **Gesamtprojekte:** 25+ Dateien mit verschiedenen Komplexitätsgraden
+- **AI-Integration:** 2 lokale Chatbots - Vanilla JS & Vue.js (13-14)
+- **Gesamtprojekte:** 26+ Dateien mit verschiedenen Komplexitätsgraden
 
 ## 📚 Grundlagen-Dateien (00 - Temp)
 
@@ -277,9 +277,9 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 - **Environment:** Development mit Hot-Reload
 - **Schwierigkeit:** ⭐⭐⭐⭐ Master
 
-## 🤖 AI-Integration Projekt (13 - Chatbot-local)
+## 🤖 AI-Integration Projekte (13-14)
 
-### [Lokaler Chatbot mit Ollama](13%20-%20Chatbot-local/)
+### [13 - Chatbot-local (Vanilla JavaScript)](13%20-%20Chatbot-local/)
 
 **KI-basierte Chatanwendung mit lokalem LLaMA Modell**
 
@@ -295,6 +295,47 @@ npm run dev  # Startet mit nodemon für Auto-Reload
 - **Konzepte:** REST API Integration, Fetch API, Stream-Processing, Local Storage, Markdown Parsing
 - **Requirements:** Ollama Server mit LLaMA Modell
 - **Schwierigkeit:** ⭐⭐⭐⭐ Master
+
+### [14 - Chatbot-local-vue (Vue.js)](14%20-%20Chatbot-local-vue/)
+
+**Vue.js Chatbot mit moderner Component-Architektur**
+
+- **Technologie:** Vue.js 3, Composition API, Vite, Ollama API
+- **Struktur:** [`localChatbot/`](14%20-%20Chatbot-local-vue/localChatbot/) - Vollständige Vue.js Anwendung
+
+#### Vue-Komponenten:
+
+- [`App.vue`](14%20-%20Chatbot-local-vue/localChatbot/src/App.vue) - Hauptkomponente mit State Management
+- [`ChatHeader.vue`](14%20-%20Chatbot-local-vue/localChatbot/src/components/ChatHeader.vue) - Statischer Header
+- [`ChatContainer.vue`](14%20-%20Chatbot-local-vue/localChatbot/src/components/ChatContainer.vue) - Nachrichten-Container mit Auto-Scroll
+- [`MessageComponent.vue`](14%20-%20Chatbot-local-vue/localChatbot/src/components/MessageComponent.vue) - Wiederverwendbare Message-Komponente
+- [`ChatInput.vue`](14%20-%20Chatbot-local-vue/localChatbot/src/components/ChatInput.vue) - Eingabefeld mit Form-Handling
+- [`useOllama.js`](14%20-%20Chatbot-local-vue/localChatbot/src/composables/useOllama.js) - Composable für API-Integration
+
+#### Features:
+
+- **Reactive State Management** - Vue 3 Composition API
+- **Component-based Architecture** - Modulare, wiederverwendbare Komponenten
+- **Props & Events** - Parent-Child Kommunikation
+- **Scoped Styles** - Isolierte CSS pro Komponente
+- **Composables** - Wiederverwendbare API-Logik
+- **Error Handling** - Robuste Fehlerbehandlung
+- **Copy-to-Clipboard** - Bot-Antworten kopieren
+- **Auto-Scroll** - Intelligentes Scroll-Verhalten
+- **Loading States** - UX-optimierte Ladezeichen
+
+#### Development:
+
+```bash
+npm install
+npm run dev  # Vue Development Server
+npm run build  # Production Build
+```
+
+- **Konzepte:** Vue 3 Composition API, Single File Components, Reactive Programming, Component Communication, Composables Pattern
+- **Build-Tools:** Vite, ESLint, Hot-Reload
+- **Requirements:** Ollama Server mit LLaMA 3.2 Modell
+- **Schwierigkeit:** ⭐⭐⭐⭐⭐ Expert+
 
 ## 🎯 Technische Kompetenz-Matrix
 
