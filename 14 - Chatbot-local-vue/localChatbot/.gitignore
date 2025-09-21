@@ -1,0 +1,75 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+
+/cypress/videos/
+/cypress/screenshots/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
+
+# === ZUSÄTZLICHE EMPFEHLUNGEN FÜR CHATBOT-PROJEKT ===
+
+# Environment Variables (falls Sie welche hinzufügen)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build Outputs
+build/
+out/
+
+# Cache Directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+
+# OS spezifisch
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+
+# IDE spezifisch
+*.swp
+*.swo
+*~
+
+# Package manager lockfiles (optional - siehe Kommentar unten)
+# package-lock.json
+# yarn.lock
+
+# Deployment
+.vercel
+.netlify
+
+# Vue/Vite spezifisch
+.vite/
+*.tgz
