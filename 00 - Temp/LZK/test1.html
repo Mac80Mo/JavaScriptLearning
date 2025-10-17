@@ -1,0 +1,1028 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Einfaches Quiz</title>
+
+    <!-- Ubuntu Font mit fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    </noscript>
+
+    <style>
+        :root {
+            /* Light Theme (Standard) */
+            --light-editor-bg: #ffffff;
+            --light-sidebar-bg: #f8f9fa;
+            --light-surface: #f5f5f5;
+            --light-foreground: #2d3748;
+            --light-muted: #718096;
+            --light-border: #e2e8f0;
+            --light-accent: #0066cc;
+            --light-accent-strong: #004499;
+            --light-selection: #bee3f8;
+
+            /* Dark Theme */
+            --dark-editor-bg: #1e1e1e;
+            --dark-sidebar-bg: #252526;
+            --dark-surface: #2a2a2d;
+            --dark-foreground: #d4d4d4;
+            --dark-muted: #9a9a9a;
+            --dark-border: #3c3c3c;
+            --dark-accent: #007acc;
+            --dark-accent-strong: #0a84ff;
+            --dark-selection: #264f78;
+
+            /* Gemeinsame Variablen */
+            --success: #4caf50;
+            --error: #f44747;
+            --radius: 10px;
+            --line: 1.6;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* Light Theme als Standard */
+        :root,
+        [data-theme="light"] {
+            --editor-bg: var(--light-editor-bg);
+            --sidebar-bg: var(--light-sidebar-bg);
+            --surface: var(--light-surface);
+            --foreground: var(--light-foreground);
+            --muted: var(--light-muted);
+            --border: var(--light-border);
+            --accent: var(--light-accent);
+            --accent-strong: var(--light-accent-strong);
+            --selection: var(--light-selection);
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --editor-bg: var(--dark-editor-bg);
+            --sidebar-bg: var(--dark-sidebar-bg);
+            --surface: var(--dark-surface);
+            --foreground: var(--dark-foreground);
+            --muted: var(--dark-muted);
+            --border: var(--dark-border);
+            --accent: var(--dark-accent);
+            --accent-strong: var(--dark-accent-strong);
+            --selection: var(--dark-selection);
+        }
+
+        /* Basis: 16–18px (clamped), rem-basiert */
+        html {
+            font-size: clamp(16px, 1rem + 0.4vw, 18px);
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 1rem;
+            line-height: var(--line);
+            color: var(--foreground);
+            background: var(--editor-bg);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: var(--transition);
+        }
+
+        /* Hauptinhalt-Container */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.25rem 2rem 1.25rem;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 1.2rem + 3.2vw, 2.4rem);
+            margin: 0 0 0.75rem 0;
+            color: var(--foreground);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: clamp(1.15rem, 0.9rem + 1.6vw, 1.6rem);
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        p,
+        label {
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        /* gemeinsame Card für Start / Frage / Ergebnis */
+        .card {
+            background: var(--sidebar-bg);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .question {
+            padding: 0.25rem 0;
+        }
+
+        .controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+
+        .pager {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+
+        button {
+            padding: 0.55rem 0.9rem;
+            border-radius: 8px;
+            border: 0;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--surface);
+            transform: translateY(-1px);
+        }
+
+        /* Unsichtbarer Header-Bereich */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            padding: 1rem 0;
+            margin-bottom: 0;
+        }
+
+        .header-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Theme Toggle im Header */
+        .theme-toggle-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .theme-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .result {
+            padding: 0.5rem 0;
+        }
+
+        .per-question {
+            margin: 0.35rem 0;
+            padding: 0.45rem;
+            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .score-badge {
+            background: var(--accent);
+            color: #fff;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        fieldset {
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        legend {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--accent);
+        }
+
+        :focus {
+            outline: 3px solid var(--selection);
+            outline-offset: 2px;
+        }
+
+        /* IHK-spezifische Styles */
+        details {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--border);
+        }
+
+        summary {
+            transition: var(--transition);
+        }
+
+        summary:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        table {
+            color: var(--foreground);
+        }
+
+        th {
+            color: var(--foreground);
+            font-weight: 600;
+        }
+
+        /* kleine Bildschirme! */
+        @media (max-width:420px) {
+            html {
+                font-size: 15px;
+            }
+
+            .app-header {
+                padding: 0.5rem 0;
+            }
+
+            .header-container {
+                padding: 0 0.75rem;
+            }
+
+            .main-content {
+                padding: 0 0.75rem 1.5rem 0.75rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .theme-btn {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
+            }
+
+            /* Mobile-optimierte Tabelle */
+            table {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 0.2rem 0.3rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Unsichtbarer Header mit Theme-Toggle -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="theme-toggle-wrapper">
+                <button class="theme-btn" id="themeToggle" aria-label="Theme umschalten"
+                    title="Zwischen Hell- und Dunkelmodus wechseln">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hauptinhalt -->
+    <main class="main-content">
+        <h1>Mini-Quiz (Single- & Multi-Choice)</h1>
+
+        <div id="card" class="card" aria-live="polite">
+            <div id="startScreen">
+                <h2>Willkommen</h2>
+                <p>Klicke auf <strong>Start</strong>, um das Quiz zu beginnen.</p>
+                <div class="controls">
+                    <button id="startBtn">Start</button>
+                </div>
+            </div>
+
+            <div id="quiz" class="hidden" tabindex="-1"></div>
+
+            <div class="controls hidden" id="navControls">
+                <div class="pager" id="pager">
+                    <button id="prevBtn" class="secondary">Zurück</button>
+                    <button id="nextBtn">Weiter</button>
+                </div>
+                <div style="margin-left:auto">
+                    <button id="restartBtn" class="secondary">Neu starten</button>
+                </div>
+            </div>
+
+            <div id="result" class="result hidden" aria-live="polite"></div>
+        </div>
+
+        <script>
+            // Konstanten
+            // IHK-Notenschlüssel für Fachinformatiker
+            const IHK_GRADES = {
+                SEHR_GUT: { min: 92, max: 100, note: '1,0-1,4', text: 'Sehr gut' },
+                GUT: { min: 81, max: 91, note: '1,5-2,4', text: 'Gut' },
+                BEFRIEDIGEND: { min: 67, max: 80, note: '2,5-3,4', text: 'Befriedigend' },
+                AUSREICHEND: { min: 50, max: 66, note: '3,5-4,4', text: 'Ausreichend' },
+                MANGELHAFT: { min: 30, max: 49, note: '4,5-5,4', text: 'Mangelhaft' },
+                UNGENUEGEND: { min: 0, max: 29, note: '5,5-6,0', text: 'Ungenügend' }
+            };
+
+            const GRADE_MESSAGES = {
+                SEHR_GUT: 'Hervorragend! Das ist Spitzenleistung!',
+                GUT: 'Sehr gut gemacht! Du hast das Thema verstanden.',
+                BEFRIEDIGEND: 'Solide Leistung! Weiter so.',
+                AUSREICHEND: 'Bestanden! Mit etwas mehr Übung wird es noch besser.',
+                MANGELHAFT: 'Noch nicht bestanden. Mehr Übung erforderlich.',
+                UNGENUEGEND: 'Durchgefallen! - üben und nochmal versuchen!'
+            };
+
+            const SELECTORS = {
+                QUIZ: 'quiz',
+                RESULT: 'result',
+                START_BTN: 'startBtn',
+                START_SCREEN: 'startScreen',
+                NAV_CONTROLS: 'navControls',
+                PREV_BTN: 'prevBtn',
+                NEXT_BTN: 'nextBtn',
+                RESTART_BTN: 'restartBtn',
+                THEME_TOGGLE: 'themeToggle'
+            };
+
+            const STORAGE_KEY = 'quiz_answers';
+            const THEME_STORAGE_KEY = 'quiz_theme_preference';
+
+            // Theme-Management
+            const THEMES = {
+                LIGHT: 'light',
+                DARK: 'dark'
+            };
+
+            const THEME_ICONS = {
+                [THEMES.LIGHT]: '🌙',
+                [THEMES.DARK]: '☀️'
+            };
+
+            let currentTheme = THEMES.LIGHT;
+
+            const questions = [
+                { id: 1, type: "single", text: "Welche Programmiersprache läuft im Browser?", choices: ["Python", "JavaScript", "C++", "Rust"], correct: [1] },
+                { id: 2, type: "multi", text: "Welche der folgenden sind JavaScript-Datentypen?", choices: ["String", "Integer (native)", "Boolean", "Undefined"], correct: [0, 2, 3] },
+                { id: 3, type: "single", text: "Welches HTML-Element enthält JavaScript direkt?", choices: ["<script>", "<style>", "<main>", "<meta>"], correct: [0] }
+            ];
+
+            // DOM-Elemente mit Error-Handling
+            const getElement = (id) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.error(`Element mit ID '${id}' nicht gefunden`);
+                }
+                return element;
+            };
+
+            const quizEl = getElement(SELECTORS.QUIZ);
+            const resultEl = getElement(SELECTORS.RESULT);
+            const startBtn = getElement(SELECTORS.START_BTN);
+            const startScreen = getElement(SELECTORS.START_SCREEN);
+            const navControls = getElement(SELECTORS.NAV_CONTROLS);
+            const prevBtn = getElement(SELECTORS.PREV_BTN);
+            const nextBtn = getElement(SELECTORS.NEXT_BTN);
+            const restartBtn = getElement(SELECTORS.RESTART_BTN);
+            const themeToggle = getElement(SELECTORS.THEME_TOGGLE);
+
+            let currentIndex = 0;
+            const answers = {}; // { [questionId]: [indices] }
+
+            // Theme-Funktionen
+            /**
+             * Speichert die Theme-Präferenz
+             * @param {string} theme - Das zu speichernde Theme
+             */
+            function saveThemePreference(theme) {
+                try {
+                    localStorage.setItem(THEME_STORAGE_KEY, theme);
+                } catch (error) {
+                    console.warn('Konnte Theme-Präferenz nicht speichern:', error);
+                }
+            }
+
+            /**
+             * Lädt die gespeicherte Theme-Präferenz
+             * @returns {string} Das gespeicherte Theme oder System-Präferenz als Standard
+             */
+            function loadThemePreference() {
+                try {
+                    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+                    if (saved && Object.values(THEMES).includes(saved)) {
+                        return saved;
+                    }
+                    // Fallback auf System-Präferenz wenn nichts gespeichert
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches
+                        ? THEMES.DARK
+                        : THEMES.LIGHT;
+                } catch (error) {
+                    console.warn('Konnte Theme-Präferenz nicht laden:', error);
+                    return THEMES.LIGHT;
+                }
+            }
+
+            /**
+             * Wendet das angegebene Theme an
+             * @param {string} theme - Das anzuwendende Theme
+             */
+            function applyTheme(theme) {
+                const htmlElement = document.documentElement;
+                htmlElement.setAttribute('data-theme', theme);
+
+                // Icon aktualisieren
+                if (themeToggle) {
+                    themeToggle.textContent = THEME_ICONS[theme];
+                    themeToggle.setAttribute('title', getThemeTooltip(theme));
+                }
+
+                currentTheme = theme;
+                saveThemePreference(theme);
+            }
+
+            /**
+             * Gibt den Tooltip-Text für das aktuelle Theme zurück
+             * @param {string} theme - Das aktuelle Theme
+             * @returns {string} Tooltip-Text
+             */
+            function getThemeTooltip(theme) {
+                return theme === THEMES.LIGHT
+                    ? 'Zu Dunkelmodus wechseln'
+                    : 'Zu Hellmodus wechseln';
+            }
+
+            /**
+             * Wechselt zwischen Light und Dark Theme
+             */
+            function toggleTheme() {
+                const nextTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+                applyTheme(nextTheme);
+            }
+
+            // Local Storage Funktionen
+            function saveAnswersToStorage() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        answers,
+                        currentIndex,
+                        timestamp: Date.now()
+                    }));
+                } catch (error) {
+                    console.warn('Konnte Antworten nicht speichern:', error);
+                }
+            }
+
+            function loadAnswersFromStorage() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        // Nur laden wenn nicht älter als 1 Stunde
+                        if (Date.now() - data.timestamp < 3600000) {
+                            Object.assign(answers, data.answers);
+                            currentIndex = data.currentIndex || 0;
+                            return true;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Konnte Antworten nicht laden:', error);
+                }
+                return false;
+            }
+
+            function clearStoredAnswers() {
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (error) {
+                    console.warn('Konnte Storage nicht leeren:', error);
+                }
+            }
+
+            // Utility-Funktionen
+            function show(el) {
+                if (el) el.classList.remove('hidden');
+            }
+
+            function hide(el) {
+                if (el) el.classList.add('hidden');
+            }
+
+            /**
+             * Escaped HTML-Zeichen für XSS-Schutz
+             * @param {string} str - Der zu escapende String
+             * @returns {string} Escaped String
+             */
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            /**
+             * Erstellt die HTML-Struktur für eine Frage
+             * @param {Object} question - Das Fragen-Objekt
+             * @param {number} index - Index der aktuellen Frage
+             * @param {number} total - Gesamtanzahl der Fragen
+             * @returns {string} HTML-String
+             */
+            function createQuestionHTML(question, index, total) {
+                const savedAnswers = answers[question.id] || [];
+                let html = `<fieldset>
+                <legend>${index + 1} / ${total}: ${escapeHtml(question.text)}</legend>`;
+
+                question.choices.forEach((choice, choiceIndex) => {
+                    const id = `q${question.id}_c${choiceIndex}`;
+                    const checked = savedAnswers.includes(choiceIndex) ? 'checked' : '';
+                    const type = question.type === 'single' ? 'radio' : 'checkbox';
+
+                    html += `
+                    <div class="question">
+                        <input type="${type}" name="q${question.id}" id="${id}" value="${choiceIndex}" ${checked}>
+                        <label for="${id}" style="margin-left:.5rem">${escapeHtml(choice)}</label>
+                    </div>`;
+                });
+
+                html += '</fieldset>';
+                return html;
+            }
+
+            /**
+             * Rendert die aktuelle Frage
+             */
+            function renderQuestion() {
+                try {
+                    const question = questions[currentIndex];
+                    const total = questions.length;
+
+                    if (!question || !quizEl) {
+                        console.error('Fehler beim Rendern der Frage');
+                        return;
+                    }
+
+                    // HTML erstellen und einsetzen
+                    quizEl.innerHTML = createQuestionHTML(question, currentIndex, total);
+
+                    // Navigation aktualisieren
+                    updateNavigation();
+
+                    // UI-Zustand aktualisieren
+                    hide(startScreen);
+                    hide(resultEl);
+                    show(quizEl);
+                    show(navControls);
+
+                    // Fokus setzen
+                    const firstInput = quizEl.querySelector('input');
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+
+                    // Antworten speichern
+                    saveAnswersToStorage();
+                } catch (error) {
+                    console.error('Fehler beim Rendern der Frage:', error);
+                }
+            }
+
+            /**
+             * Aktualisiert die Navigations-Buttons
+             */
+            function updateNavigation() {
+                if (prevBtn) {
+                    prevBtn.disabled = currentIndex === 0;
+                }
+                if (nextBtn) {
+                    nextBtn.textContent = (currentIndex === questions.length - 1) ? 'Fertig' : 'Weiter';
+                }
+            }
+
+            /**
+             * Speichert die aktuellen Auswahlen der angezeigten Frage
+             */
+            function saveCurrentSelections() {
+                try {
+                    const question = questions[currentIndex];
+                    if (!question) return;
+
+                    const selectedInputs = document.querySelectorAll(`[name="q${question.id}"]:checked`);
+                    const selected = Array.from(selectedInputs).map(input => Number(input.value));
+
+                    answers[question.id] = selected;
+                    saveAnswersToStorage();
+                } catch (error) {
+                    console.error('Fehler beim Speichern der Auswahlen:', error);
+                }
+            }
+
+            /**
+             * Bewertet eine einzelne Frage
+             * @param {Object} question - Das Fragen-Objekt
+             * @param {Array} selectedAnswers - Die ausgewählten Antworten
+             * @returns {number} Punktzahl zwischen 0 und 1
+             */
+            function evaluateQuestion(question, selectedAnswers) {
+                if (question.type === 'single') {
+                    return (selectedAnswers.length === 1 && selectedAnswers[0] === question.correct[0]) ? 1 : 0;
+                } else {
+                    const correctSet = new Set(question.correct);
+                    const totalCorrect = question.correct.length || 1;
+                    const correctChosen = selectedAnswers.filter(answer => correctSet.has(answer)).length;
+                    const wrongChosen = selectedAnswers.filter(answer => !correctSet.has(answer)).length;
+
+                    let score = (correctChosen - wrongChosen) / totalCorrect;
+                    return Math.max(0, Math.min(1, score));
+                }
+            }
+
+            /**
+             * Bewertet alle Fragen und liefert Ergebnisse zurück
+             * @returns {Object} Bewertungsergebnisse
+             */
+            function evaluate() {
+                try {
+                    let totalPoints = 0;
+                    const maxPoints = questions.length;
+                    const details = [];
+
+                    questions.forEach(question => {
+                        const selectedAnswers = answers[question.id] || [];
+                        const score = evaluateQuestion(question, selectedAnswers);
+
+                        totalPoints += score;
+                        details.push({
+                            id: question.id,
+                            text: question.text,
+                            score: Number(score.toFixed(2)),
+                            max: 1
+                        });
+                    });
+
+                    return {
+                        totalPoints: Number(totalPoints.toFixed(2)),
+                        maxPoints,
+                        details
+                    };
+                } catch (error) {
+                    console.error('Fehler bei der Bewertung:', error);
+                    return { totalPoints: 0, maxPoints: questions.length, details: [] };
+                }
+            }
+
+            /**
+             * Erstellt das HTML für die Ergebnisanzeige
+             * @param {Object} results - Die Bewertungsergebnisse
+             * @returns {string} HTML-String
+             */
+            function createResultHTML(results) {
+                const percent = Math.round((results.totalPoints / results.maxPoints) * 100);
+                const grade = getIHKGrade(percent);
+
+                // Farbe basierend auf Note bestimmen
+                const getGradeColor = (gradeKey) => {
+                    switch (gradeKey) {
+                        case 'SEHR_GUT': return '#4caf50'; // Grün
+                        case 'GUT': return '#8bc34a'; // Hellgrün
+                        case 'BEFRIEDIGEND': return '#ffc107'; // Gelb
+                        case 'AUSREICHEND': return '#ff9800'; // Orange
+                        case 'MANGELHAFT': return '#f44336'; // Rot
+                        case 'UNGENUEGEND': return '#9e1b1b'; // Dunkelrot
+                        default: return 'var(--accent)';
+                    }
+                };
+
+                let html = `
+                <h2>Quiz-Ergebnis</h2>
+                <div style="background: var(--surface); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border-left: 4px solid ${getGradeColor(grade.key)};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div>
+                            <strong style="font-size: 1.2rem;">${results.totalPoints.toFixed(2)} / ${results.maxPoints} Punkte</strong>
+                            <div style="color: var(--muted); font-size: 0.9rem;">entspricht ${percent}%</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="background: ${getGradeColor(grade.key)}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: bold;">
+                                ${grade.text}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="color: var(--foreground); font-style: italic;">
+                        ${escapeHtml(grade.message)}
+                    </div>
+                </div>
+                
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: var(--surface); border-radius: var(--radius);">
+                        IHK-Notenschlüssel Fachinformatiker
+                    </summary>
+                    <div style="padding: 1rem; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); margin-top: 2px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="text-align: left; padding: 0.5rem;">Note</th>
+                                    <th style="text-align: left; padding: 0.5rem;">Bezeichnung</th>
+                                    <th style="text-align: right; padding: 0.5rem;">Punkte</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                // IHK-Notentabelle hinzufügen
+                Object.entries(IHK_GRADES).forEach(([key, gradeInfo]) => {
+                    const isCurrentGrade = key === grade.key;
+                    const bgColor = isCurrentGrade ? getGradeColor(key) : 'transparent';
+                    const textColor = isCurrentGrade ? 'white' : 'var(--foreground)';
+
+                    html += `
+                    <tr style="background: ${bgColor}; color: ${textColor};">
+                        <td style="padding: 0.3rem 0.5rem; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.note}</td>
+                        <td style="padding: 0.3rem 0.5rem; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.text}</td>
+                        <td style="padding: 0.3rem 0.5rem; text-align: right; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.min}-${gradeInfo.max}%</td>
+                    </tr>`;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+
+                <details>
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: var(--surface); border-radius: var(--radius);">
+                        Detaillierte Punkteverteilung
+                    </summary>
+                    <div style="padding: 1rem; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); margin-top: 2px;">`;
+
+                results.details.forEach(detail => {
+                    const questionPercent = Math.round((detail.score / detail.max) * 100);
+                    const isCorrect = detail.score === detail.max;
+                    const iconColor = isCorrect ? '#4caf50' : '#f44336';
+                    const icon = isCorrect ? '✅' : '❌';
+
+                    html += `
+                    <div class="per-question" style="border-left: 3px solid ${iconColor};">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <span style="font-size: 1.1rem;">${icon}</span>
+                            <div style="flex: 1;">
+                                <strong>Frage ${detail.id}:</strong> ${escapeHtml(detail.text)}
+                                <div style="margin-top: 0.35rem; display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="score-badge" style="background: ${iconColor};">
+                                        ${detail.score.toFixed(2)} / ${detail.max} Punkte
+                                    </span>
+                                    <span style="color: var(--muted); font-size: 0.9rem;">
+                                        ${questionPercent}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                html += `
+                    </div>
+                </details>
+                
+                <div class="controls" style="margin-top: 1.5rem;">
+                    <button id="resultRestartBtn">Neues Quiz starten</button>
+                </div>`;
+
+                return html;
+            }        /**
+         * Ermittelt die IHK-Note basierend auf dem Prozentsatz
+         * @param {number} percent - Prozentsatz der erreichten Punkte
+         * @returns {Object} Note-Objekt mit allen relevanten Informationen
+         */
+            function getIHKGrade(percent) {
+                for (const [key, grade] of Object.entries(IHK_GRADES)) {
+                    if (percent >= grade.min && percent <= grade.max) {
+                        return {
+                            key,
+                            ...grade,
+                            message: GRADE_MESSAGES[key]
+                        };
+                    }
+                }
+                // Fallback für unerwartete Werte
+                return {
+                    key: 'UNGENUEGEND',
+                    ...IHK_GRADES.UNGENUEGEND,
+                    message: GRADE_MESSAGES.UNGENUEGEND
+                };
+            }
+
+            /**
+             * Gibt die passende Nachricht für einen Punktestand zurück (Legacy-Support)
+             * @param {number} percent - Prozentsatz der erreichten Punkte
+             * @returns {string} Nachricht
+             */
+            function getScoreMessage(percent) {
+                const grade = getIHKGrade(percent);
+                return grade.message;
+            }
+
+            /**
+             * Zeigt das Endergebnis an
+             */
+            function showResult() {
+                try {
+                    const results = evaluate();
+                    const html = createResultHTML(results);
+
+                    if (resultEl) {
+                        resultEl.innerHTML = html;
+
+                        // UI-Zustand aktualisieren
+                        hide(quizEl);
+                        hide(navControls);
+                        show(resultEl);
+
+                        // Event-Listener für Neustart-Button
+                        const restartButton = document.getElementById('resultRestartBtn');
+                        if (restartButton) {
+                            restartButton.addEventListener('click', restartQuiz);
+                            restartButton.focus();
+                        }
+
+                        // Storage leeren da Quiz beendet
+                        clearStoredAnswers();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Anzeigen des Ergebnisses:', error);
+                }
+            }
+
+            /**
+             * Startet das Quiz neu
+             */
+            function restartQuiz() {
+                try {
+                    // Antworten zurücksetzen
+                    for (const key in answers) {
+                        delete answers[key];
+                    }
+                    currentIndex = 0;
+
+                    // Storage leeren
+                    clearStoredAnswers();
+
+                    // UI zurücksetzen
+                    hide(resultEl);
+                    hide(quizEl);
+                    hide(navControls);
+                    show(startScreen);
+
+                    // Fokus auf Start-Button
+                    if (startBtn) {
+                        startBtn.focus();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Neustart:', error);
+                }
+            }
+
+            // Event-Listener mit Error-Handling
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    try {
+                        currentIndex = 0;
+                        renderQuestion();
+                    } catch (error) {
+                        console.error('Fehler beim Starten des Quiz:', error);
+                    }
+                });
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    try {
+                        saveCurrentSelections();
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            renderQuestion();
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Zurückgehen:', error);
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    try {
+                        saveCurrentSelections();
+                        if (currentIndex < questions.length - 1) {
+                            currentIndex++;
+                            renderQuestion();
+                        } else {
+                            showResult();
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Weitergehen:', error);
+                    }
+                });
+            }
+
+            if (restartBtn) {
+                restartBtn.addEventListener('click', restartQuiz);
+            }
+
+            // Theme-Toggle Event-Listener
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // Initialisierung beim Laden der Seite
+            document.addEventListener('DOMContentLoaded', () => {
+                try {
+                    // Theme initialisieren
+                    const savedTheme = loadThemePreference();
+                    applyTheme(savedTheme);
+
+                    // Versuche gespeicherte Antworten zu laden
+                    if (loadAnswersFromStorage() && Object.keys(answers).length > 0) {
+                        // Falls gespeicherte Daten vorhanden, an entsprechender Stelle fortsetzen
+                        if (currentIndex < questions.length) {
+                            renderQuestion();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Initialisieren:', error);
+                }
+            });
+
+        </script>
+    </main>
+</body>
+
+</html>
