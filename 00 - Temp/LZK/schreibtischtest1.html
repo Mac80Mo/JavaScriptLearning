@@ -636,7 +636,7 @@
 
 
 
-            // Neue Funktion zur zufälligen Auswahl von 25 Fragen
+            // Neue Funktion zur zufälligen Auswahl von 30 Fragen
             function selectRandomQuestions(allQuestions, count = 30) {
                 // Kopie des Arrays erstellen, um Original nicht zu verändern
                 const shuffled = [...allQuestions];
@@ -647,7 +647,7 @@
                     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
                 }
 
-                // Erste 25 Fragen zurückgeben
+                // Erste 30 Fragen zurückgeben
                 return shuffled.slice(0, count);
             }
 
