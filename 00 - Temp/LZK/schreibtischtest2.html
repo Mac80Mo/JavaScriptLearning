@@ -1,0 +1,1725 @@
+<!doctype html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Schreibtisch-Test</title>
+
+    <!-- Ubuntu Font mit fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    </noscript>
+
+    <style>
+        :root {
+            /* Light Theme (Standard) */
+            --light-editor-bg: #ffffff;
+            --light-sidebar-bg: #f8f9fa;
+            --light-surface: #f5f5f5;
+            --light-foreground: #2d3748;
+            --light-muted: #718096;
+            --light-border: #e2e8f0;
+            --light-accent: #0066cc;
+            --light-accent-strong: #004499;
+            --light-selection: #bee3f8;
+
+            /* Dark Theme */
+            --dark-editor-bg: #1e1e1e;
+            --dark-sidebar-bg: #252526;
+            --dark-surface: #2a2a2d;
+            --dark-foreground: #d4d4d4;
+            --dark-muted: #9a9a9a;
+            --dark-border: #3c3c3c;
+            --dark-accent: #007acc;
+            --dark-accent-strong: #0a84ff;
+            --dark-selection: #264f78;
+
+            /* Gemeinsame Variablen */
+            --success: #4caf50;
+            --error: #f44747;
+            --radius: 10px;
+            --line: 1.6;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        /* Light Theme als Standard */
+        :root,
+        [data-theme="light"] {
+            --editor-bg: var(--light-editor-bg);
+            --sidebar-bg: var(--light-sidebar-bg);
+            --surface: var(--light-surface);
+            --foreground: var(--light-foreground);
+            --muted: var(--light-muted);
+            --border: var(--light-border);
+            --accent: var(--light-accent);
+            --accent-strong: var(--light-accent-strong);
+            --selection: var(--light-selection);
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --editor-bg: var(--dark-editor-bg);
+            --sidebar-bg: var(--dark-sidebar-bg);
+            --surface: var(--dark-surface);
+            --foreground: var(--dark-foreground);
+            --muted: var(--dark-muted);
+            --border: var(--dark-border);
+            --accent: var(--dark-accent);
+            --accent-strong: var(--dark-accent-strong);
+            --selection: var(--dark-selection);
+        }
+
+        /* Basis: 16–18px (clamped), rem-basiert */
+        html {
+            font-size: clamp(16px, 1rem + 0.4vw, 18px);
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: "Ubuntu", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 1rem;
+            line-height: var(--line);
+            color: var(--foreground);
+            background: var(--editor-bg);
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: var(--transition);
+        }
+
+        /* Hauptinhalt-Container */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.25rem 2rem 1.25rem;
+        }
+
+        h1 {
+            font-size: clamp(1.6rem, 1.2rem + 3.2vw, 2.4rem);
+            margin: 0 0 0.75rem 0;
+            color: var(--foreground);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: clamp(1.15rem, 0.9rem + 1.6vw, 1.6rem);
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        p,
+        label {
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        /* gemeinsame Card für Start / Frage / Ergebnis */
+        .card {
+            background: var(--sidebar-bg);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .question {
+            padding: 0.25rem 0;
+        }
+
+        .controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+
+        .pager {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+        }
+
+        button {
+            padding: 0.55rem 0.9rem;
+            border-radius: 8px;
+            border: 0;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        button:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        button.secondary {
+            background: transparent;
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--surface);
+            transform: translateY(-1px);
+        }
+
+        /* Unsichtbarer Header-Bereich */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: transparent;
+            padding: 1rem 0;
+            margin-bottom: 0;
+        }
+
+        .header-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Theme Toggle im Header */
+        .theme-toggle-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--foreground);
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .theme-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .result {
+            padding: 0.5rem 0;
+        }
+
+        .per-question {
+            margin: 0.35rem 0;
+            padding: 0.45rem;
+            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .score-badge {
+            background: var(--accent);
+            color: #fff;
+            padding: 0.15rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            margin-left: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        fieldset {
+            border: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        legend {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--accent);
+        }
+
+        :focus {
+            outline: 3px solid var(--selection);
+            outline-offset: 2px;
+        }
+
+        /* IHK-spezifische Styles */
+        details {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--border);
+        }
+
+        summary {
+            transition: var(--transition);
+        }
+
+        summary:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        table {
+            color: var(--foreground);
+        }
+
+        th {
+            color: var(--foreground);
+            font-weight: 600;
+        }
+
+        /* kleine Bildschirme! */
+        @media (max-width:420px) {
+            html {
+                font-size: 15px;
+            }
+
+            .app-header {
+                padding: 0.5rem 0;
+            }
+
+            .header-container {
+                padding: 0 0.75rem;
+            }
+
+            .main-content {
+                padding: 0 0.75rem 1.5rem 0.75rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .theme-btn {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
+            }
+
+            /* Mobile-optimierte Tabelle */
+            table {
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 0.2rem 0.3rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Unsichtbarer Header mit Theme-Toggle -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="theme-toggle-wrapper">
+                <button class="theme-btn" id="themeToggle" aria-label="Theme umschalten"
+                    title="Zwischen Hell- und Dunkelmodus wechseln">
+                    🌙
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hauptinhalt -->
+    <main class="main-content">
+        <h1>Verständnis-Fragen : AP1, AP2 & WISO</h1>
+
+        <div id="card" class="card" aria-live="polite">
+            <div id="startScreen">
+                <h2>Willkommen</h2>
+                <p>Wähle ein Thema und klicke auf <strong>Start</strong>, um das Quiz zu beginnen.</p>
+
+                <div class="topic-selection" style="margin: 1.5rem 0;">
+                    <fieldset style="border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem;">
+                        <legend style="padding: 0 0.5rem; font-weight: 600;">Themenauswahl</legend>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="topic" value="AP1" style="margin-right: 0.5rem;">
+                                <span>AP1 - Abschlussprüfung Teil 1</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="topic" value="AP2" checked style="margin-right: 0.5rem;">
+                                <span>AP2 - Abschlussprüfung Teil 2</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="radio" name="topic" value="WISO" style="margin-right: 0.5rem;">
+                                <span>WISO - Wirtschafts- und Sozialkunde</span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn">Start</button>
+                </div>
+            </div>
+
+            <div id="quiz" class="hidden" tabindex="-1"></div>
+
+            <div class="controls hidden" id="navControls">
+                <div class="pager" id="pager">
+                    <button id="prevBtn" class="secondary">Zurück</button>
+                    <button id="nextBtn">Weiter</button>
+                </div>
+                <div style="margin-left:auto">
+                    <button id="restartBtn" class="secondary">Neu starten</button>
+                </div>
+            </div>
+
+            <div id="result" class="result hidden" aria-live="polite"></div>
+        </div>
+
+        <script>
+            // Konstanten
+            // IHK-Notenschlüssel für Fachinformatiker
+            const IHK_GRADES = {
+                SEHR_GUT: { min: 92, max: 100, note: '1,0-1,4', text: 'Sehr gut' },
+                GUT: { min: 81, max: 91, note: '1,5-2,4', text: 'Gut' },
+                BEFRIEDIGEND: { min: 67, max: 80, note: '2,5-3,4', text: 'Befriedigend' },
+                AUSREICHEND: { min: 50, max: 66, note: '3,5-4,4', text: 'Ausreichend' },
+                MANGELHAFT: { min: 30, max: 49, note: '4,5-5,4', text: 'Mangelhaft' },
+                UNGENUEGEND: { min: 0, max: 29, note: '5,5-6,0', text: 'Ungenügend' }
+            };
+
+            const GRADE_MESSAGES = {
+                SEHR_GUT: 'Hervorragend! Das ist Spitzenleistung!',
+                GUT: 'Sehr gut gemacht! Du hast das Thema verstanden.',
+                BEFRIEDIGEND: 'Solide Leistung! Weiter so.',
+                AUSREICHEND: 'Bestanden! Mit etwas mehr Übung wird es noch besser.',
+                MANGELHAFT: 'Noch nicht bestanden. Mehr Übung erforderlich.',
+                UNGENUEGEND: 'Durchgefallen! - üben und nochmal versuchen!'
+            };
+
+            const SELECTORS = {
+                QUIZ: 'quiz',
+                RESULT: 'result',
+                START_BTN: 'startBtn',
+                START_SCREEN: 'startScreen',
+                NAV_CONTROLS: 'navControls',
+                PREV_BTN: 'prevBtn',
+                NEXT_BTN: 'nextBtn',
+                RESTART_BTN: 'restartBtn',
+                THEME_TOGGLE: 'themeToggle'
+            };
+
+            const STORAGE_KEY = 'quiz_answers';
+            const THEME_STORAGE_KEY = 'quiz_theme_preference';
+
+            // Theme-Management
+            const THEMES = {
+                LIGHT: 'light',
+                DARK: 'dark'
+            };
+
+            const THEME_ICONS = {
+                [THEMES.LIGHT]: '🌙',
+                [THEMES.DARK]: '☀️'
+            };
+
+            let currentTheme = THEMES.LIGHT;
+
+            // Globale Variable für aktuelle Quiz-Fragen
+            let currentQuizQuestions = [];
+
+            // === AP2 - Abschlussprüfung Teil 2 ===
+            const questionsAP2 = [
+                // --- OOP (1–25) ---
+                { id: 1, type: "single", text: "Welche Aussage zu 'static' in Java stimmt?", choices: ["static-Methoden können this verwenden", "static-Elemente gehören zur Klasse, nicht zur Instanz", "static-Attribute werden über den Konstruktor initialisiert", "static verhindert Vererbung"], correct: [1] },
+                { id: 2, type: "single", text: "Welche Signatur ist für die main-Methode gültig?", choices: ["public void main(String[] args)", "public static void main()", "public static final void main(String[] args)", "private static void main(String[] args)"], correct: [2] },
+                { id: 3, type: "multi", text: "Welche Regeln gelten beim Überschreiben (override) einer Methode?", choices: ["Gleicher Methodenname", "Gleiche Parameterliste", "Rückgabetyp beliebig", "Zugriff darf nicht restriktiver werden"], correct: [0, 1, 3] },
+                { id: 4, type: "single", text: "Warum kann man auf jedem Objekt toString() aufrufen?", choices: ["Weil jede Klasse final ist", "Weil jede Klasse von Object erbt", "Weil toString() static ist", "Weil der Compiler es einfügt"], correct: [1] },
+                { id: 5, type: "single", text: "Was trifft auf abstrakte Klassen zu?", choices: ["Sie können instanziert werden", "Sie dürfen keine implementierten Methoden enthalten", "Sie können abstrakte Methoden enthalten", "Sie müssen Interfaces implementieren"], correct: [2] },
+                { id: 6, type: "multi", text: "Welche Aussagen zu Interfaces sind korrekt?", choices: ["Können als Typparameter dienen", "Definieren vertragliche Schnittstellen", "Ersetzen Vererbung vollständig", "Können von Klassen implementiert werden"], correct: [0, 1, 3] },
+                { id: 7, type: "single", text: "Wofür eignet sich ein statischer Initialisierungsblock?", choices: ["Für komplexe Initialisierung statischer Felder", "Für das Setzen von Instanzattributen", "Für das Überschreiben von toString()", "Für die Initialisierung in jedem Konstruktor"], correct: [0] },
+                { id: 8, type: "single", text: "Was ist Polymorphie in Java?", choices: ["Überladen gleicher Methodennamen", "Zuweisung inkompatibler Typen", "Gleiche Schnittstelle, unterschiedliche Implementierung", "Mehrfachvererbung von Klassen"], correct: [2] },
+                { id: 9, type: "single", text: "Was ist ein Konstruktor in Java?", choices: ["Eine Methode mit Rückgabetyp", "Eine spezielle Routine ohne Rückgabetyp zum Erzeugen/Initialisieren von Objekten", "Ein statischer Block", "Ein Interface"], correct: [1] },
+                { id: 10, type: "single", text: "Welche Aussage zu Sichtbarkeiten stimmt?", choices: ["private ist breiter als public", "protected ist restriktiver als private", "public ist am wenigsten restriktiv", "default ist breiter als public"], correct: [2] },
+                { id: 11, type: "multi", text: "Was gilt für Klassenattribute (static Felder)?", choices: ["Gemeinsam für alle Instanzen", "Über Klassennamen erreichbar", "In static-Methoden nicht nutzbar", "Können in static-Block initialisiert werden"], correct: [0, 1, 3] },
+                { id: 12, type: "single", text: "Was passiert, wenn eine statische Methode auf ein Instanzfeld zugreifen will?", choices: ["Kompiliert immer", "Benötigt ein Objekt/Instanz", "Runtime-Exception", "Wird stillschweigend ignoriert"], correct: [1] },
+                { id: 13, type: "single", text: "Welche Aussage zur Vererbung ist richtig?", choices: ["Java unterstützt Mehrfachvererbung von Klassen", "Unterklassen erben von Object nur bei Interfaces", "Jede Klasse (ohne extends) erbt implizit von Object", "Vererbung verhindert Überschreiben"], correct: [2] },
+                { id: 14, type: "single", text: "Wofür steht 'final' bei einer Methode?", choices: ["Methode kann nicht überschrieben werden", "Methode ist static", "Methode ist abstrakt", "Methode ist privat"], correct: [0] },
+                { id: 15, type: "multi", text: "Welche Vorteile bietet toString()-Override?", choices: ["Bessere Debug-Ausgaben", "Ermöglicht Serialisierung", "Bessere Log-Ausgaben", "Verhindert NullPointerExceptions"], correct: [0, 2] },
+                { id: 16, type: "single", text: "Welche Beziehung beschreibt 'ist-ein' in OOP?", choices: ["Aggregation", "Komposition", "Assoziation", "Vererbung"], correct: [3] },
+                { id: 17, type: "single", text: "Welche Signatur darf NICHT die main ersetzen?", choices: ["public static void main(String... args)", "public static final void main(String[] args)", "final public static void main(String[] args)", "public static void start(String[] args)"], correct: [3] },
+                { id: 18, type: "single", text: "Welcher Zugriff ist restriktiver als protected?", choices: ["public", "private", "package-private (default) ist breiter als protected", "Keiner"], correct: [1] },
+                { id: 19, type: "multi", text: "Welche Aussagen zu Konstruktoren sind korrekt?", choices: ["Können überladen werden", "Haben keinen Rückgabetyp", "Heissen immer wie die Klasse", "Sind immer public"], correct: [0, 1, 2] },
+                { id: 20, type: "single", text: "Wofür steht 'this' in Instanzmethoden?", choices: ["Verweis auf die aktuelle Instanz", "Verweis auf die Klasse", "Verweis auf die Superklasse", "Konstante Referenz auf Object"], correct: [0] },
+                { id: 21, type: "single", text: "Welche Aussage zu 'static' ist FALSCH?", choices: ["static-Methoden können ohne Objekt benutzt werden", "static-Methoden haben keinen Zugriff auf Instanzzustand ohne Objekt", "static-Felder sind je Instanz verschieden", "static wird oft für Utility-Methoden genutzt"], correct: [2] },
+                { id: 22, type: "multi", text: "Welche Merkmale treffen auf eine abstrakte Klasse zu?", choices: ["Kann abstrakte und konkrete Methoden enthalten", "Kann nicht instanziert werden", "Muss mindestens eine abstrakte Methode haben", "Kann als Basisklasse dienen"], correct: [0, 1, 3] },
+                { id: 23, type: "single", text: "Wodurch wird 'Überschatten' (overriding) verhindert?", choices: ["private Methoden in Oberklasse", "final Methoden in Oberklasse", "static Methoden in Oberklasse", "Alle genannten"], correct: [3] },
+                { id: 24, type: "single", text: "Welcher Grundsatz beschreibt Polymorphie am besten?", choices: ["Ein Interface, viele Datentypen", "Eine Schnittstelle, viele Implementierungen", "Eine Klasse, viele Basisklassen", "Viele Klassen, eine Implementierung"], correct: [1] },
+                { id: 25, type: "single", text: "Warum ist der Zugriffsmodifizierer der Override-Methode nicht restriktiver erlaubt?", choices: ["Wegen Laufzeitkosten", "Wegen Binärkompatibilität", "Wegen Substitutionsprinzip", "Wegen Serialisierung"], correct: [2] },
+
+                // --- UML (26–50) ---
+                { id: 26, type: "single", text: "Was zeigt ein UML-Klassendiagramm?", choices: ["Abläufe zur Laufzeit", "Struktur von Klassen/Attributen/Beziehungen", "Datenbankabfragen", "Netzwerktopologie"], correct: [1] },
+                { id: 27, type: "single", text: "Was bedeutet Multiplizität [1..*] an einem Assoziationsende?", choices: ["Genau eins", "Beliebig viele (auch null)", "Mindestens eins, keine obere Grenze", "Maximal eins"], correct: [2] },
+                { id: 28, type: "single", text: "Welche Beziehung drückt eine Generalisierung im UML-Klassendiagramm aus?", choices: ["Teil-von", "Ist-ein", "Verwendet", "Abhängigkeitsbeziehung"], correct: [1] },
+                { id: 29, type: "single", text: "Was beschreibt Navigierbarkeit an einem Assoziationsende?", choices: ["Wer wen kennt", "Ob Vererbung erlaubt ist", "Ob Defaultwerte gesetzt sind", "Ob Aggregation vorliegt"], correct: [0] },
+                { id: 30, type: "single", text: "Welche Aussage zur Aggregation ist korrekt?", choices: ["Starke Teil-Ganzes-Beziehung (Lebensdauer gebunden)", "Schwache Teil-Ganzes-Beziehung", "Ist Vererbung", "Ersetzt Assoziationen"], correct: [1] },
+                { id: 31, type: "single", text: "Welche Aussage zur Komposition ist korrekt?", choices: ["Teile leben unabhängig vom Ganzen", "Teile werden mit dem Ganzen erzeugt/zerstört", "Ist eine Generalisierung", "Hat mit Multiplizität nichts zu tun"], correct: [1] },
+                { id: 32, type: "multi", text: "Welche Elemente gehören in ein Klassendiagramm (Basis)?", choices: ["Klassen", "Attribute", "Methoden", "SQL-Views"], correct: [0, 1, 2] },
+                { id: 33, type: "single", text: "Was ist in der Analysephase typisch für UML-Klassendiagramme?", choices: ["Sehr detaillierte technische Typen", "Konzeptuelle Sicht mit wenigen Notationselementen", "Implementierungsdetails", "Thread- und Prozessmodelle"], correct: [1] },
+                { id: 34, type: "single", text: "Wozu dient die Angabe von Sichtbarkeiten (+/#/-) in UML?", choices: ["Darstellung von SQL-Constraints", "Darstellung von Zugriffsrechten auf Attribute/Methoden", "Darstellung von Transaktionen", "Darstellung von Testfällen"], correct: [1] },
+                { id: 35, type: "single", text: "Welche Multiplizität steht für 'beliebig viele'?", choices: ["[0..1]", "[1]", "[*]", "[1..2]"], correct: [2] },
+                { id: 36, type: "single", text: "Welche Frage beantwortet das Klassendiagramm unter 'Entwurf/Design'?", choices: ["Wie wird logisch realisiert?", "Wie wird getestet?", "Wie wird deployed?", "Wie werden Kosten kalkuliert?"], correct: [0] },
+                { id: 37, type: "single", text: "Was beschreibt eine einfache Assoziation zwischen zwei Klassen?", choices: ["Semantische Beziehung", "Vererbung", "Lebenszyklusbindung", "Transaktionsgrenzen"], correct: [0] },
+                { id: 38, type: "multi", text: "Welche Angaben sind bei einer Assoziation üblich?", choices: ["Assoziationsname", "Leserichtung", "Navigierbarkeit", "SQL-Datentypen"], correct: [0, 1, 2] },
+                { id: 39, type: "single", text: "Wofür dient Multiplizität an Attributen?", choices: ["Anzahl möglicher Ausprägungen", "Zugriffsrechte", "Lebensdauer", "Performancebewertung"], correct: [0] },
+                { id: 40, type: "single", text: "Welche Darstellung ist KEIN Teil des UML-Klassendiagramms?", choices: ["Klassen mit Attributen", "Methodensignaturen", "Sequenz der Methodenaufrufe", "Sichtbarkeiten"], correct: [2] },
+                { id: 41, type: "multi", text: "Welche UML-Notation zeigt die Sichtbarkeit von Attributen/Methoden korrekt?", choices: ["+ für public", "# für protected", "- für private", "~ für package (paketsichtbar)"], correct: [0, 1, 2, 3] },
+                { id: 42, type: "single", text: "Wofür ist ein Klassendiagramm in der Testphase nützlich?", choices: ["Performance-Messung", "Referenz zur Vollständigkeitsprüfung", "Automatische Codegenerierung", "Deploymentplanung"], correct: [1] },
+                { id: 43, type: "single", text: "Welche Beziehung ist KEINE Assoziationsspezialisierung?", choices: ["Aggregation", "Komposition", "Generalisierung", "Bidirektionale Assoziation"], correct: [2] },
+                { id: 44, type: "multi", text: "Welche Notationselemente zeigen Vererbung an?", choices: ["Offener Pfeil zum Supertyp", "Strichlinie mit Diamant", "Geschlossener ausgefüllter Diamant", "Dreiecks-Pfeil (Generalisierung)"], correct: [0, 3] },
+                { id: 45, type: "single", text: "Was beschreibt '[1]' an einem Attribut im UML-Kontext?", choices: ["Optionales Attribut", "Genau eine Ausprägung erforderlich", "Beliebig viele", "Mindestens 2"], correct: [1] },
+                { id: 46, type: "single", text: "Welche Aussage zur Leserichtung einer Assoziation ist korrekt?", choices: ["Definiert SQL-Joins", "Verfeinert die Spezifikation, wer wen kennt", "Ersetzt Multiplizität", "Nur in Sequenzdiagrammen relevant"], correct: [1] },
+                { id: 47, type: "single", text: "Was unterscheidet Analyse- von Implementierungs-Klassendiagrammen?", choices: ["Nichts", "Analyse ist konzeptuell grob, Implementierung detailreich", "Implementierung ist grob", "Analyse enthält Code"], correct: [1] },
+                { id: 48, type: "multi", text: "Welche 'Rest-Beziehungen' treten in Klassendiagrammen auf?", choices: ["Abhängigkeiten", "Assoziationen", "Anwendungsfälle", "Generalisierung"], correct: [0, 1, 3] },
+                { id: 49, type: "single", text: "Welche Aussage zur Komposition ist FALSCH?", choices: ["Stärker als Aggregation", "Teil kann ohne Ganzes bestehen", "Lebensdauer an Ganzes gebunden", "Ist eine Assoziationsspezialisierung"], correct: [1] },
+                { id: 50, type: "single", text: "Wofür steht die Kardinalität 1:n im ER-/UML-Kontext?", choices: ["Ein Datensatz A zu genau einem B", "Viele A zu einem B", "Ein A zu vielen B", "Viele A zu vielen B"], correct: [2] },
+
+                // --- SQL/Datenbanken (51–75) ---
+                { id: 51, type: "single", text: "Was ist ein Primärschlüssel?", choices: ["Ein optionaler Fremdschlüssel", "Eindeutige Identifikation eines Datensatzes", "Ein Standardwert", "Ein Index ohne Nutzen"], correct: [1] },
+                { id: 52, type: "single", text: "Was ist ein Fremdschlüssel?", choices: ["Ein eindeutiges Feld der gleichen Tabelle", "Verweist auf den Primärschlüssel einer anderen Tabelle", "Ein Textfeld", "Ein Datentyp"], correct: [1] },
+                { id: 53, type: "single", text: "Was bewirkt NOT NULL auf einer Spalte?", choices: ["Nur eindeutige Werte", "Keine NULL-Werte erlaubt", "Automatische Erhöhung", "Transaktionsstart"], correct: [1] },
+                { id: 54, type: "single", text: "Welche SQL-Anweisung erstellt eine Tabelle?", choices: ["CREATE TABLE", "ALTER TABLE", "INSERT INTO", "SELECT"], correct: [0] },
+                { id: 55, type: "multi", text: "Welche Optionen/Constraints können in DDL bei Tabellen-/Spaltendefinitionen verwendet werden (laut Übersicht)?", choices: ["PRIMARY KEY", "DEFAULT", "UNIQUE", "ON DELETE CASCADE"], correct: [0, 1, 2, 3] },
+                { id: 56, type: "single", text: "Wofür steht ON DELETE CASCADE?", choices: ["Verbietet Löschungen", "Löscht abhängige Datensätze bei Löschung des referenzierten Datensatzes", "Erzeugt Indexe", "Setzt Standardwerte"], correct: [1] },
+                { id: 57, type: "single", text: "Welche Datentyp-Kombination ist typisch äquivalent (MariaDB/SQLite)?", choices: ["INT / INTEGER", "DOUBLE / TEXT", "DECIMAL / BLOB", "BOOLEAN / REAL"], correct: [0] },
+                { id: 58, type: "single", text: "Wofür wird eine Verbindungstabelle (Junction Table) benötigt?", choices: ["Für 1:1", "Für 1:n", "Für n:m-Beziehungen", "Nie"], correct: [2] },
+                { id: 59, type: "single", text: "Was ist ein Kartesisches Produkt im SQL-Kontext?", choices: ["Ein spezieller Datentyp", "Ergebnis fehlender Join-Bedingungen", "Ein Fremdschlüssel", "Ein Unique-Constraint"], correct: [1] },
+                { id: 60, type: "single", text: "Welche JOIN-Schreibweise ist übersichtlicher laut Unterlage?", choices: ["Implizite Joins in FROM durch Komma", "Explizite JOIN ... ON Syntax", "Subselects", "Cartesian JOIN"], correct: [1] },
+                { id: 61, type: "multi", text: "Welche SQL-Befehle gehören zum DML/DDL-Kern?", choices: ["SELECT", "INSERT", "UPDATE", "DELETE"], correct: [0, 1, 2, 3] },
+                { id: 62, type: "single", text: "Was ist eine Transaktion?", choices: ["Eine einzelne SELECT-Anweisung", "Eine atomare Folge von Operationen mit COMMIT/ROLLBACK", "Ein Index", "Ein Trigger"], correct: [1] },
+                { id: 63, type: "single", text: "Wofür steht FOREIGN KEY (KategorieID) REFERENCES Kategorien(KategorieID)?", choices: ["Definition eines Primärschlüssels", "Definition eines Fremdschlüssels auf Kategorien", "Erstellen eines Indexes", "Setzen eines Defaultwertes"], correct: [1] },
+                { id: 64, type: "single", text: "Welche Aussage zu MariaDB/SQLite trifft zu?", choices: ["SQLite nutzt strikte feste Datentypen je Spalte", "MariaDB verlangt präzise Typangaben je Spalte", "Beide ignorieren Datentypen", "Beide setzen automatisch AUTOINCREMENT"], correct: [1] },
+                { id: 65, type: "single", text: "Welche Spalte ist im Beispiel 'Buecher' KEIN Kandidat für DECIMAL(5,2)?", choices: ["Preis", "KategorieID", "Rabatt in Euro", "Steuerbetrag"], correct: [1] },
+                { id: 66, type: "multi", text: "Welche Vorteile bringt Normalisierung (z. B. 2NF)?", choices: ["Eliminierung partieller Abhängigkeiten", "Weniger Redundanz", "Bessere Konsistenz", "Verzicht auf Primärschlüssel"], correct: [0, 1, 2] },
+                { id: 67, type: "single", text: "Was ist ein zusammengesetzter Primärschlüssel in einer n:m-Tabelle?", choices: ["Ein Primärschlüssel aus mehreren Spalten", "Ein Fremdschlüssel", "Ein Index ohne Nutzen", "Ein Textschlüssel"], correct: [0] },
+                { id: 68, type: "single", text: "Welche SELECT-Ausgabe ist bei fehlender Join-Bedingung typisch?", choices: ["0 Zeilen", "Nur passende Paare", "Jede Kombination beider Tabellen", "Fehler"], correct: [2] },
+                { id: 69, type: "single", text: "Wozu dienen Aliase (AS) in SELECTs?", choices: ["Zum Umbenennen von Spaltenausgaben", "Zum Erstellen von Indizes", "Zum Setzen von Defaultwerten", "Zum Start einer Transaktion"], correct: [0] },
+                { id: 70, type: "single", text: "Welche Beziehung besteht zwischen 'Buecher' und 'Kategorien' im Beispiel?", choices: ["1:1", "1:n (ein Kategorieeintrag, viele Bücher)", "n:m", "Keine"], correct: [1] },
+                { id: 71, type: "single", text: "Welche JOIN-Kette verbindet Buecher–BuchAutoren–Autoren korrekt?", choices: ["FROM Buecher JOIN Autoren", "FROM BuchAutoren JOIN Kategorien", "FROM Buecher JOIN BuchAutoren ON ... JOIN Autoren ON ...", "FROM Autoren JOIN Kategorien"], correct: [2] },
+                { id: 72, type: "multi", text: "Welche SQL-Constraints erhöhen die Datenintegrität?", choices: ["PRIMARY KEY", "FOREIGN KEY", "CHECK", "UNIQUE"], correct: [0, 1, 2, 3] },
+                { id: 73, type: "single", text: "Was leistet ON UPDATE CASCADE?", choices: ["Verbietet Updates", "Aktualisiert abhängige Fremdschlüsselwerte bei Änderung", "Setzt Spalte auf NULL", "Erstellt Trigger"], correct: [1] },
+                { id: 74, type: "single", text: "Welche Aussage zu MariaDB vs. MySQL (Unterlage) ist korrekt?", choices: ["Sind identisch geblieben", "Haben sich funktional auseinanderentwickelt", "MySQL ist Community-getrieben, MariaDB Corporate", "MariaDB ist Closed Source"], correct: [1] },
+                { id: 75, type: "single", text: "Welche Spaltendefinition ist syntaktisch korrekt (vereinfacht)?", choices: ["Preis TEXT NOT NULL", "KategorieName VARCHAR(255) NOT NULL", "BuchID DOUBLE PRIMARY KEY", "AutorID BLOB UNIQUE NOT NULL"], correct: [1] },
+
+                // --- Restliche Themen (76–100) ---
+                { id: 76, type: "single", text: "Welcher Paketname ist in Java automatisch verfügbar?", choices: ["java.lang", "java.util", "system.lang", "java.system"], correct: [0] },
+                { id: 77, type: "single", text: "Welche Datei wird von 'javac' erzeugt?", choices: [".java", ".class", ".jar", ".dll"], correct: [1] },
+                { id: 78, type: "single", text: "Welcher Datentyp ist Standard für Ganzzahlen in Java?", choices: ["byte", "short", "int", "long"], correct: [2] },
+                { id: 79, type: "single", text: "Wie vergleicht man Strings in Java korrekt?", choices: ["==", "equals()", "!=", "comparePointer()"], correct: [1] },
+                { id: 80, type: "single", text: "Welche Typen sind beim switch erlaubt (Auswahl)?", choices: ["boolean, long", "int, String, enum", "double, float", "List, Map"], correct: [1] },
+                { id: 81, type: "multi", text: "Welche Operatoren sind logische Kurzschlussoperatoren?", choices: ["&&", "||", "&", "|"], correct: [0, 1] },
+                { id: 82, type: "single", text: "Welcher Effekt unterscheidet '&' von '&&' im if-Ausdruck?", choices: ["Keiner", "'&' prüft immer beide Operanden", "'&&' prüft immer beide Operanden", "Beide sind bitweise"], correct: [1] },
+                { id: 83, type: "single", text: "Was ist beim Vergleich von Gleitkommazahlen zu vermeiden?", choices: ["Deltavergleich", "Direkter Gleichheitsvergleich mit ==", "Vergleich '<'", "Runden"], correct: [1] },
+                { id: 84, type: "single", text: "Welche Reihenfolge hat höhere Präzedenz?", choices: ["Addition vor Multiplikation", "Multiplikation vor Addition", "Beide gleich", "Zufällig"], correct: [1] },
+                { id: 85, type: "single", text: "Was bedeutet der ternäre Operator a ? b : c ?", choices: ["Addiert drei Werte", "Bedingter Ausdruck mit zwei Alternativen", "Vergleicht drei Strings", "Startet Thread"], correct: [1] },
+                { id: 86, type: "multi", text: "Welche sind primitive Datentypen in Java?", choices: ["boolean", "char", "String", "int"], correct: [0, 1, 3] },
+                { id: 87, type: "single", text: "Was ist das Ergebnis von 'i++' im Ausdruck y = i++?", choices: ["y bekommt i+1, i bleibt", "y bekommt i, i wird danach erhöht", "Beides erhöht vorher", "Syntaxfehler"], correct: [1] },
+                { id: 88, type: "single", text: "Welche Deklaration ist unzulässig?", choices: ["int x;", "boolean a, b;", "int 123;", "char c;"], correct: [2] },
+                { id: 89, type: "single", text: "Warum kompiliert 'System.out.print(voegel+marder)' nicht im Beispiel mit 'voegel' als Instanzfeld und main als static?", choices: ["Weil marder static ist", "Weil voegel nicht static ist und ohne Instanz nicht erreichbar", "Weil System.out static ist", "Weil '+' verboten ist"], correct: [1] },
+                { id: 90, type: "single", text: "Wofür steht EVA im Programmierkontext?", choices: ["Eingabe–Verarbeitung–Ausgabe", "Entity–View–Aggregation", "Evaluate–Assign–Verify", "Eingang–Verbindung–Abschluss"], correct: [0] },
+                { id: 91, type: "single", text: "Welche Aussage zu lokalen Variablen ist korrekt?", choices: ["Haben Defaultwerte", "Müssen vor Benutzung initialisiert werden", "Sind immer static", "Werden automatisch public"], correct: [1] },
+                { id: 92, type: "single", text: "Welche Schreibweise ist seit Java 7 erlaubt, um Zahlen lesbarer zu machen?", choices: ["Leerzeichen", "Unterstriche in Literalen", "Kommas", "Backticks"], correct: [1] },
+                { id: 93, type: "multi", text: "Welche Fehlerarten unterscheidet man?", choices: ["Syntaxfehler", "Laufzeitfehler (Exceptions)", "Logische Fehler", "Compilerwarnungen = Fehler"], correct: [0, 1, 2] },
+                { id: 94, type: "single", text: "Welche Kontrolle bewirkt 'break' im switch?", choices: ["Springt zum default", "Beendet den switch-Zweig", "Startet neuen Case", "Wirft Exception"], correct: [1] },
+                { id: 95, type: "single", text: "Welche Beziehung im ERM erfordert oft eine Kind-/Kreuztabelle?", choices: ["1:1", "1:n", "n:m", "Keine"], correct: [2] },
+                { id: 96, type: "single", text: "Welche Aussage zur Kardinalität ist korrekt?", choices: ["Legt Datenintegrität nicht fest", "Ist entscheidend für korrektes Design und Integrität", "Ist nur grafische Zierde", "Ersetzt Schlüssel"], correct: [1] },
+                { id: 97, type: "single", text: "Welche Aussage zu java.util vs. java.lang stimmt?", choices: ["Beide werden automatisch importiert", "Nur java.lang wird automatisch importiert", "Nur java.util wird automatisch importiert", "Keines wird automatisch importiert"], correct: [1] },
+                { id: 98, type: "multi", text: "Welche Java-Kontrollstrukturen sind genannt?", choices: ["if/else", "switch", "for/while/do-while", "goto"], correct: [0, 1, 2] },
+                { id: 99, type: "single", text: "Welche Bezeichner sind zulässig?", choices: ["5freunde", "_intern", "A.Einstein", "double"], correct: [1] },
+                { id: 100, type: "single", text: "Was ist Zweck von Testdokumentation laut Unterlagen?", choices: ["Nur Quellcode ersetzen", "Transparenz über Verfahren, Stufen und Ergebnisse", "Nur für Benutzerhandbuch", "Nur für Deployment"], correct: [1] },
+
+                // --- OOP (allgemein, Java-unabhängig) (101–110) ---
+                { id: 101, type: "single", text: "Was beschreibt das Liskovsche Substitutionsprinzip (LSP) am besten?", choices: ["Unterklassen dürfen strengere Vorbedingungen einführen", "Objekte von Subtypen müssen sich wie Objekte ihres Supertyps verhalten lassen", "Subtypen dürfen Rückgabewerte beliebig ändern", "LSP gilt nur in dynamisch typisierten Sprachen"], correct: [1] },
+                { id: 102, type: "multi", text: "Welche gehören zu den SOLID-Prinzipien?", choices: ["Single Responsibility", "Open/Closed", "Interface Segregation", "YAGNI"], correct: [0, 1, 2] },
+                { id: 103, type: "single", text: "Welcher Begriff beschreibt das Verbergen interner Details hinter einer öffentlichen Schnittstelle?", choices: ["Polymorphie", "Kapselung", "Abstraktion", "Generalisierung"], correct: [1] },
+                { id: 104, type: "single", text: "Welche Beziehung beschreibt 'hat-ein' in OOP typischerweise?", choices: ["Vererbung", "Aggregation/Komposition", "Abhängigkeit", "Generalisierung"], correct: [1] },
+                { id: 105, type: "multi", text: "Welche Aussagen zu Abstraktion sind korrekt?", choices: ["Vereinfacht komplexe Systeme durch Fokussieren auf Wesentliches", "Kann durch abstrakte Klassen oder Interfaces realisiert werden", "Steht im Widerspruch zur Kapselung", "Verringert Kopplung"], correct: [0, 1] },
+                { id: 106, type: "single", text: "Was ist dynamisches Binden (dynamic dispatch)?", choices: ["Auswahl der Methode zur Compile-Zeit", "Auswahl der konkreten Methode zur Laufzeit basierend auf dem Objekttyp", "Bindung von Variablen an Speicheradressen", "Fehlerbehandlung beim Casting"], correct: [1] },
+                { id: 107, type: "multi", text: "Welche Metriken deuten auf gutes OOP-Design hin?", choices: ["Hohe Kohäsion", "Geringe Kopplung", "Viele Abhängigkeiten", "Klassen mit multiplen Verantwortlichkeiten"], correct: [0, 1] },
+                { id: 108, type: "single", text: "Welche Aussage zu Komposition vs. Aggregation ist korrekt?", choices: ["Komposition bindet Lebenszyklen stärker als Aggregation", "Aggregation ist stärker als Vererbung", "Beide sind identisch", "Komposition erlaubt keine Multiplizitäten"], correct: [0] },
+                { id: 109, type: "single", text: "Was ist ein Interface im allgemeinen OOP-Sinn?", choices: ["Konkrete Implementierung eines Algorithmus", "Vertrag mit Signaturen ohne Implementierung", "Klasse mit Feldern und Methoden", "Namespace für Konstanten"], correct: [1] },
+                { id: 110, type: "multi", text: "Welche Vorteile bringt Polymorphie?", choices: ["Erhöht Austauschbarkeit von Implementierungen", "Vereinfacht Unit-Testing über Test-Doubles", "Erzwingt globale Variablen", "Verhindert Abhängigkeiten"], correct: [0, 1] },
+
+                // --- UML (Klassendiagramme, Use-Case, Aktivitäts-/Ablauf-, Sequenzdiagramme) (111–120) ---
+                { id: 111, type: "single", text: "Was zeigt ein UML-Use-Case-Diagramm primär?", choices: ["Interne Klassenstruktur", "Interaktionen zwischen Akteuren und Systemfunktionen", "Thread-Synchronisation", "Datenbank-Tabellen"], correct: [1] },
+                { id: 112, type: "multi", text: "Welche Elemente gehören typischerweise in ein Use-Case-Diagramm?", choices: ["Akteure", "Use Cases", "Beziehungen (include/extend)", "Sequenznummern"], correct: [0, 1, 2] },
+                { id: 113, type: "single", text: "Was beschreibt eine «include»-Beziehung zwischen Use Cases?", choices: ["Optionales Verhalten", "Zwingende Wiederverwendung eines gemeinsamen Teilablaufs", "Vererbung der Use Cases", "Abhängigkeit zu einem externen System"], correct: [1] },
+                { id: 114, type: "single", text: "Welches UML-Diagramm eignet sich zur Darstellung von Kontroll- und Datenflüssen mit Verzweigungen und Schleifen?", choices: ["Klassendiagramm", "Aktivitätsdiagramm (Ablauf)", "Zustandsdiagramm", "Komponentendiagramm"], correct: [1] },
+                { id: 115, type: "multi", text: "Welche Notationselemente sind typisch für Aktivitätsdiagramme?", choices: ["Aktivitäten", "Kontrollknoten (Entscheidung/Merge)", "Start-/Endknoten", "Lifelines"], correct: [0, 1, 2] },
+                { id: 116, type: "single", text: "Was bildet ein Sequenzdiagramm ab?", choices: ["Zeitliche Abfolge von Nachrichten zwischen Objekten", "Klassenerweiterungen zur Compile-Zeit", "DB-Transaktionen", "Deployment-Topologie"], correct: [0] },
+                { id: 117, type: "multi", text: "Welche Elemente sind in Sequenzdiagrammen üblich?", choices: ["Lifelines", "Nachrichten (synchron/asynchron)", "Aktivierungsbalken", "Entity-Relation-Kardinalitäten"], correct: [0, 1, 2] },
+                { id: 118, type: "single", text: "Wie wird Vererbung im UML-Klassendiagramm notiert?", choices: ["Pfeil mit leerem Dreieck zum Supertyp", "Gefüllter Diamant zum Supertyp", "Strichlinie mit Pfeil zum Client", "Pfeil mit gefülltem Dreieck zum Subtyp"], correct: [0] },
+                { id: 119, type: "single", text: "Was beschreibt «extend» im Use-Case-Diagramm?", choices: ["Zwingende Einbindung eines Use Cases", "Optionales, bedingtes Verhalten erweitert einen Basis-Use-Case", "Datenflussbeziehung", "Generalisierung zwischen Akteuren"], correct: [1] },
+                { id: 120, type: "single", text: "Wofür nutzt man Pakete im UML-Klassendiagramm?", choices: ["Zur Gruppierung/Strukturierung verwandter Elemente", "Nur für Deployment", "Zur Darstellung von SQL-Views", "Zur Laufzeitmessung"], correct: [0] },
+
+                // --- SQL (Syntax & Datentypen) (121–130) ---
+                { id: 121, type: "single", text: "Welche Anweisung ändert das Schema einer bestehenden Tabelle?", choices: ["UPDATE TABLE", "ALTER TABLE", "MODIFY SCHEMA", "CHANGE TABLE"], correct: [1] },
+                { id: 122, type: "multi", text: "Welche sind gängige SQL-Skalartypen (je nach Dialekt)?", choices: ["INTEGER", "VARCHAR(n)", "DECIMAL(p,s)", "BOOLEAN"], correct: [0, 1, 2, 3] },
+                { id: 123, type: "single", text: "Welche Schreibweise ist für eine Primärschlüsselspalte syntaktisch korrekt (vereinfacht)?", choices: ["id INT PRIMARY KEY", "id TEXT PRIMARY", "PRIMARY id INT KEY", "id BOOL PRIMARY KEY AUTOINCREMENT"], correct: [0] },
+                { id: 124, type: "single", text: "Welche Funktion hat CHECK in einer Spaltendefinition?", choices: ["Setzt Standardwert", "Prüft eine Bedingung für zulässige Werte", "Erstellt Index", "Erzwingt Fremdschlüssel"], correct: [1] },
+                { id: 125, type: "multi", text: "Welche Aussagen zu NULL sind korrekt?", choices: ["NULL ist kein leerer String", "Vergleiche mit NULL benötigen IS NULL/IS NOT NULL", "NULL = NULL ist TRUE", "Aggregatfunktionen ignorieren NULL typischerweise"], correct: [0, 1, 3] },
+                { id: 126, type: "single", text: "Welche Projektion ist gültig?", choices: ["SELECT * FORM t;", "SELECT col1, col2 FROM t;", "SELECT (col1 col2) FROM t;", "SELECT WHERE col1 FROM t;"], correct: [1] },
+                { id: 127, type: "single", text: "Welche CAST-Syntax ist in vielen SQL-Dialekten üblich?", choices: ["CAST(expr AS TYPE)", "TO TYPE expr", "CONVERT expr->TYPE", "TYPE(expr) CAST"], correct: [0] },
+                { id: 128, type: "multi", text: "Welche Datentypen sind typischerweise für Geldbeträge geeignet?", choices: ["DECIMAL(p,s)", "FLOAT", "NUMERIC(p,s)", "DOUBLE"], correct: [0, 2] },
+                { id: 129, type: "single", text: "Welche Klausel schränkt Ergebniszeilen nach einer Bedingung ein?", choices: ["GROUP BY", "HAVING", "WHERE", "ORDER BY"], correct: [2] },
+                { id: 130, type: "single", text: "Welche Definition ist syntaktisch plausibel (vereinfacht)?", choices: ["price DECIMAL(8,2) NOT NULL", "name VARCHAR NOT NULL", "flag BOOLEAN(1)", "dt DATE(10)"], correct: [0] },
+
+                // --- Programmierparadigmen (131–135) ---
+                { id: 131, type: "single", text: "Welches Merkmal ist typisch für das funktionale Paradigma?", choices: ["Zustandsänderungen und seiteneffektlastige Funktionen", "Unveränderlichkeit (Immutability) und reine Funktionen", "Fokus auf Klassenhierarchien", "Ablaufsteuerung über GOTO"], correct: [1] },
+                { id: 132, type: "multi", text: "Welche Paradigmen zählen zu Mehrparadigmen-Sprachen häufig dazu?", choices: ["Imperativ", "Objektorientiert", "Funktional", "Logikbasiert"], correct: [0, 1, 2, 3] },
+                { id: 133, type: "single", text: "Welches Statement trifft auf deklarative Programmierung zu?", choices: ["Beschreibt das Was statt des Wie", "Erfordert detaillierte Schritt-für-Schritt-Anweisungen", "Ist gleichbedeutend mit prozedural", "Verbietet Rekursion"], correct: [0] },
+                { id: 134, type: "single", text: "Was ist kennzeichnend für prozedurale Programmierung?", choices: ["Programme als Sammlung interagierender Objekte", "Programme als Abfolge von Prozeduren/Funktionen", "Ausschließliche Verwendung von Monaden", "Unifikation als Kern"], correct: [1] },
+                { id: 135, type: "multi", text: "Welche Vorteile bringen reine Funktionen?", choices: ["Leichtere Testbarkeit", "Referentielle Transparenz", "Nichtdeterministische Ergebnisse", "Einfachere Parallelisierung"], correct: [0, 1, 3] },
+
+                // --- Algorithmik (136–140) ---
+                { id: 136, type: "single", text: "Welche Komplexität hat binäre Suche im Worst-Case auf einem sortierten Array?", choices: ["O(1)", "O(log n)", "O(n)", "O(n log n)"], correct: [1] },
+                { id: 137, type: "multi", text: "Welche Aussagen zu Big-O-Notation sind korrekt?", choices: ["Beschreibt asymptotisches Wachstum", "Ignoriert konstante Faktoren", "Dominiert von höchsten Termen", "Gibt exakte Laufzeiten in ms an"], correct: [0, 1, 2] },
+                { id: 138, type: "single", text: "Welches Sortierverfahren ist im Durchschnitt O(n log n)?", choices: ["Bubble Sort", "Insertion Sort", "Merge Sort", "Counting Sort"], correct: [2] },
+                { id: 139, type: "single", text: "Welche Datenstruktur unterstützt FIFO am natürlichsten?", choices: ["Stack", "Queue", "Heap", "Baum"], correct: [1] },
+                { id: 140, type: "multi", text: "Welche Eigenschaften hat ein stabiler Sortieralgorithmus?", choices: ["Erhält die Reihenfolge gleicher Schlüssel", "Benötigt immer O(1) Zusatzspeicher", "Wichtig bei mehrstufigen Sortierkriterien", "Kann nicht rekursiv sein"], correct: [0, 2] },
+
+                // --- Design-Patterns (141–145) ---
+                { id: 141, type: "single", text: "Welches Pattern kapselt die Erzeugung komplexer Objekte Schritt für Schritt?", choices: ["Singleton", "Builder", "Strategy", "Observer"], correct: [1] },
+                { id: 142, type: "multi", text: "Welche sind Verhaltensmuster (Behavioral Patterns)?", choices: ["Strategy", "Observer", "Decorator", "Command"], correct: [0, 1, 3] },
+                { id: 143, type: "single", text: "Wofür steht das Strategy-Pattern?", choices: ["Zur Laufzeit austauschbare Algorithmen über gemeinsame Schnittstelle", "Einzigartige globale Instanz", "Benachrichtigung bei Zustandsänderungen", "Objekte aus Prototypen kopieren"], correct: [0] },
+                { id: 144, type: "single", text: "Welches Pattern fügt einem Objekt zur Laufzeit zusätzliche Verantwortlichkeiten hinzu?", choices: ["Adapter", "Decorator", "Facade", "Factory Method"], correct: [1] },
+                { id: 145, type: "multi", text: "Welche Aussagen zum Singleton sind korrekt (kritisch)?", choices: ["Globale Zustände können Testbarkeit erschweren", "Kann versteckte Kopplung erhöhen", "Ist immer thread-sicher", "Wird oft durch Dependency Injection ersetzt"], correct: [0, 1, 3] },
+
+                // --- Datenformate (CSV, JSON, XML) (146–150) ---
+                { id: 146, type: "single", text: "Was charakterisiert CSV primär?", choices: ["Hierarchische Struktur", "Schlüssel/Wert-Paare", "Zeilenorientiertes, delimiter-getrenntes Textformat", "Binäres Baumformat"], correct: [2] },
+                { id: 147, type: "multi", text: "Welche Aussagen zu JSON sind korrekt?", choices: ["Unterstützt Objekte und Arrays", "Unterstützt Kommentare nativ", "Schlüssel sind Strings", "Werte können null sein"], correct: [0, 2, 3] },
+                { id: 148, type: "single", text: "Welche Aussage zu XML ist korrekt?", choices: ["Erfordert immer ein Schema", "Ist baumförmig und nutzt Tags/Attribute", "Unterstützt keine Namespaces", "Ist binärkodiert"], correct: [1] },
+                { id: 149, type: "single", text: "Welches Feld passt NICHT gut in CSV ohne weiteres Preprocessing?", choices: ["Ein Text mit Zeilenumbrüchen und Kommas", "Ein Integer", "Ein Datum im ISO-Format", "Ein Boolean"], correct: [0] },
+                { id: 150, type: "multi", text: "Welche Mechanismen validieren Struktur/Inhalt von XML/JSON?", choices: ["XML Schema (XSD)", "DTD", "JSON Schema", "CSV Schema ist in der Spezifikation standardisiert"], correct: [0, 1, 2] },
+
+                // --- Testverfahren (151–155) ---
+                { id: 151, type: "single", text: "Was charakterisiert Black-Box-Testen?", choices: ["Test basiert auf der internen Code-Struktur", "Tests gegen die Spezifikation ohne Kenntnis der Implementierung", "Nur durch Entwickler durchführbar", "Erfordert 100% Branch-Coverage"], correct: [1] },
+                { id: 152, type: "multi", text: "Welche sind typische Teststufen?", choices: ["Unittest", "Integrationstest", "Systemtest", "Abnahmetest (Acceptance)"], correct: [0, 1, 2, 3] },
+                { id: 153, type: "single", text: "Welches Ziel verfolgen Äquivalenzklassen und Grenzwertanalyse?", choices: ["Maximal viele Testfälle erzeugen", "Mit wenigen repräsentativen Fällen Eingabebereiche abdecken", "Nur GUI-Funktionalität testen", "Ausschließlich Performance messen"], correct: [1] },
+                { id: 154, type: "multi", text: "Welche Bestandteile sollte ein guter Testfall enthalten?", choices: ["Vorbedingungen/Setup", "Konkrete Schritte bzw. Eingaben", "Erwartetes Ergebnis (Testorakel)", "Beliebige Zufallsdaten ohne Erwartung"], correct: [0, 1, 2] },
+                { id: 155, type: "single", text: "Was ist der Zweck eines Regressionstests?", choices: ["Formaler Beweis der Korrektheit", "Automatische Erkennung aller Sicherheitslücken", "Sicherstellen, dass Änderungen bestehende Funktionalität nicht brechen", "Messen der Code-Coverage"], correct: [2] },
+
+                // --- Normalisierung in Datenbanken (156–160) ---
+                { id: 156, type: "single", text: "Was ist das Hauptziel der Normalisierung?", choices: ["Mehr Redundanz für bessere Performance", "Vermeidung von Datenanomalien durch Redundanzabbau", "Erhöhung der Abfragekomplexität", "Vereinfachung von Joins"], correct: [1] },
+                { id: 157, type: "multi", text: "Welche Arten von Anomalien sollen durch Normalisierung verhindert werden?", choices: ["Einfügeanomalien", "Änderungsanomalien", "Löschanomalien", "Transaktionsanomalien"], correct: [0, 1, 2] },
+                { id: 158, type: "single", text: "Was fordert die 1. Normalform (1NF)?", choices: ["Jede Spalte enthält atomare Werte", "Jede Tabelle hat mindestens einen Fremdschlüssel", "Jede Spalte ist eindeutig benannt", "Alle Werte müssen eindeutig sein"], correct: [0] },
+                { id: 159, type: "single", text: "Was unterscheidet die 2. Normalform (2NF) von der 1NF?", choices: ["2NF eliminiert partielle Abhängigkeiten von zusammengesetzten Schlüsseln", "2NF erlaubt Mehrwertattribute", "2NF fügt Redundanz hinzu", "2NF verlangt keine Primärschlüssel"], correct: [0] },
+                { id: 160, type: "multi", text: "Welche Aussagen zur 3. Normalform (3NF) sind korrekt?", choices: ["Nicht-Schlüsselattribute dürfen nur vom Primärschlüssel abhängen", "Transitive Abhängigkeiten werden entfernt", "Sie setzt 2NF voraus", "Sie erlaubt funktionale Abhängigkeiten unter Nicht-Schlüsseln"], correct: [0, 1, 2] },
+
+                // --- SQL vs. NoSQL-Datenbanken (161–165) ---
+                { id: 161, type: "single", text: "Welche Aussage beschreibt SQL-Datenbanken korrekt?", choices: ["Nutzen flexible, schemalose Strukturen", "Nutzen ein fest definiertes Schema und relationales Modell", "Sind immer dokumentenorientiert", "Unterstützen keine Transaktionen"], correct: [1] },
+                { id: 162, type: "multi", text: "Welche Typen von NoSQL-Datenbanken existieren?", choices: ["Dokumentenorientierte", "Key-Value-Stores", "Graphdatenbanken", "Relationale Tabellenbanken"], correct: [0, 1, 2] },
+                { id: 163, type: "single", text: "Was ist ein zentrales Merkmal von NoSQL-Datenbanken?", choices: ["Feste Tabellenstrukturen", "Horizontale Skalierbarkeit und flexible Schemata", "Ausschließlich ACID-konform", "Strenge Typisierung der Felder"], correct: [1] },
+                { id: 164, type: "multi", text: "Welche Aussagen zu Konsistenz und Transaktionen sind korrekt?", choices: ["SQL-Systeme sind meist ACID-konform", "Viele NoSQL-Systeme setzen auf Eventual Consistency", "NoSQL ist immer stark konsistent", "ACID steht für Atomicity, Consistency, Isolation, Durability"], correct: [0, 1, 3] },
+                { id: 165, type: "single", text: "Welcher Anwendungsfall ist typisch für NoSQL?", choices: ["Hochgradig strukturierte Daten mit komplexen Beziehungen", "Schnelle Speicherung großer, unstrukturierter oder semi-strukturierter Datenmengen", "Strikte Transaktionssysteme im Finanzwesen", "Kleine statische Datenbestände"], correct: [1] },
+
+                // ===== Basiswissen (sprachenunabhängig) 166–190 =====
+                { id: 166, type: "single", text: "Welche Aussage beschreibt eine Information vs. Daten am besten?", choices: ["Daten sind interpretierte Bedeutung, Informationen sind Rohwerte", "Informationen sind Bedeutungsgehalt; Daten sind deren formale Darstellung", "Beides ist identisch", "Informationen sind immer kostenlos"], correct: [1] },
+                { id: 167, type: "single", text: "Was kennzeichnet ein Stellenwertsystem (z. B. Dezimal, Binär, Hex)?", choices: ["Ziffern haben unabhängig von ihrer Position denselben Wert", "Der Wert einer Ziffer hängt von ihrer Position und der Basis ab", "Nur die höchste Stelle zählt", "Es gibt keine Basis"], correct: [1] },
+                { id: 168, type: "single", text: "Warum ist das Dualsystem für digitale Hardware vorteilhaft?", choices: ["Wenig Stellenanzahl", "Einfach elektrisch realisierbar (zwei Zustände)", "Besser verständlich für Menschen", "Benötigt keine Speicherbits"], correct: [1] },
+                { id: 169, type: "single", text: "Welchen praktischen Nutzen hat das Hexadezimalsystem?", choices: ["Es ersetzt Binär vollständig", "Einfache Gruppierung von 4-Bit-Blöcken zu einer Ziffer", "Es ist langsamer zu rechnen", "Es nutzt nur die Ziffern 0–7"], correct: [1] },
+                { id: 170, type: "single", text: "Was passiert beim Zählen in Stellenwertsystemen, wenn die höchste Ziffer erreicht ist?", choices: ["Zählen stoppt", "Es wird eine neue, höherwertige Stelle erhöht und rechts auf 0 gesetzt", "Man wechselt das Zahlensystem", "Die Ziffern werden negativ"], correct: [1] },
+                { id: 171, type: "single", text: "Was beschreibt ein Datenstrom (Data Stream) im Grundsatz?", choices: ["Eine feste Dateigröße", "Sequenz von Daten, die gelesen/geschrieben werden kann", "Nur Audiodaten", "Nur Binärdaten"], correct: [1] },
+                { id: 172, type: "multi", text: "Welche Gruppen von Dateiformaten werden typischerweise unterschieden?", choices: ["Text", "Audio", "Video", "Grafik/Bild"], correct: [0, 1, 2, 3] },
+                { id: 173, type: "single", text: "Welche Speichertechnik nutzt magnetisierbare Träger und Lese-/Schreibköpfe?", choices: ["Optische Speicherung", "Magnetische Speicherung", "Mechanische Analogkarten nur", "Quanten-Speicher"], correct: [1] },
+                { id: 174, type: "single", text: "Welche Aussage zu optischer Speicherung trifft zu?", choices: ["Wird mit Laser gelesen/geschrieben", "Ist ausschließlich analog", "Nutzt keine physischen Strukturen", "Hat keine rotierenden Medien"], correct: [0] },
+                { id: 175, type: "single", text: "Welche Zielaussage beschreibt Software-Testen nach klassischer Definition?", choices: ["Programm beweisbar korrekt machen", "Programm mit der Absicht ausführen, Fehler zu finden", "Nur Performance messen", "Nur Benutzerzufriedenheit erheben"], correct: [1] },
+                { id: 176, type: "single", text: "Warum können Tests die Korrektheit nie vollständig beweisen?", choices: ["Weil Tests verboten sind", "Tests sind Stichproben; vollständige Abdeckung ist praktisch unmöglich", "Weil Compiler das übernehmen", "Weil nur UI getestet wird"], correct: [1] },
+                { id: 177, type: "multi", text: "Welche Teststufen sind grundlegend?", choices: ["Komponententest", "Integrationstest", "Systemtest", "Abnahmetest"], correct: [0, 1, 2, 3] },
+                { id: 178, type: "single", text: "Was ist der Fokus von Black-Box-Tests?", choices: ["Interne Struktur", "Spezifikation/Anforderungen ohne Kenntnis der Implementierung", "Compilerwarnungen", "Hardware-Messung"], correct: [1] },
+                { id: 179, type: "single", text: "Was ist der Fokus von White-Box-Tests?", choices: ["Benutzerflüsse", "Strukturorientiertes Testen auf Basis des Quellcodes", "Ausschließlich UI-Tests", "Nur Lasttests"], correct: [1] },
+                { id: 180, type: "multi", text: "Welche Schritte gehören typischerweise zum Testprozess?", choices: ["Testplanung", "Testentwurf & -vorbereitung", "Testdurchführung & -auswertung", "Testabschluss/Reporting"], correct: [0, 1, 2, 3] },
+                { id: 181, type: "single", text: "Wofür steht funktionale Vollständigkeit (Requirements-Bezug)?", choices: ["System ist besonders schnell", "Alle geforderten Funktionen sind vorhanden", "UI ist barrierefrei", "Es gibt keine Bugs"], correct: [1] },
+                { id: 182, type: "single", text: "Wofür steht funktionale Korrektheit (Requirements-Bezug)?", choices: ["Richtige Ergebnisse gemäß Spezifikation", "Nur gute Dokumentation", "Hohe Ausfallsicherheit", "Portierbarkeit"], correct: [0] },
+                { id: 183, type: "single", text: "Was beschreibt Gebrauchstauglichkeit (Usability) in der Qualitätssicht?", choices: ["Nur schönes Design", "Ziele effektiv/effizient/zufriedenstellend im Nutzungskontext erreichen", "Nur Tastaturbedienung", "Nur viele Funktionen"], correct: [1] },
+                { id: 184, type: "single", text: "Was ist Sicherheit (Security) im QS-Kontext?", choices: ["Nur Verschlüsselung", "Schutz von Informationen/Datennutzung gemäß Berechtigung", "Nur Backups", "Nur Firewall"], correct: [1] },
+                { id: 185, type: "single", text: "Was bedeutet Zuverlässigkeit (Reliability)?", choices: ["Beliebiges Verhalten", "Konstante Funktionsfähigkeit über Zeit unter festgelegten Bedingungen", "Nur schnelle Startzeit", "Nur geringer Speicherverbrauch"], correct: [1] },
+                { id: 186, type: "single", text: "Was ist unter Performanz (Performance) zu verstehen?", choices: ["Nur hohe FPS", "Zeit-, Ressourcen- und Kapazitätsverhalten bei Aufgabenerfüllung", "Nur CPU-Auslastung", "Nur RAM-Bedarf"], correct: [1] },
+                { id: 187, type: "single", text: "Was versteht man unter Wartbarkeit (Maintainability)?", choices: ["Änderungen sind mit hohem Aufwand möglich", "Änderungen sind mit überschaubarem Aufwand möglich und führen nicht zu unerwarteten Fehlern", "Nur Refactoring-Verbot", "Nur UI-Anpassungen"], correct: [1] },
+                { id: 188, type: "multi", text: "Welche Aussagen zu Daten vs. Informationen sind korrekt?", choices: ["Information ist interpretierter Bedeutungsgehalt", "Daten sind die maschinenlesbare Darstellung", "Information ist beliebig vervielfältigbar", "Daten sind immer analog"], correct: [0, 1, 2] },
+                { id: 189, type: "single", text: "Wozu dienen Zusammenfassungen wie „Auf Dateien zugreifen: Open/Read/Write/Close“ in Grundlagenlektionen?", choices: ["Nur zur Hardwarekonfiguration", "Um grundlegende I/O-Arbeitsabläufe zu strukturieren", "Um Zahlensysteme zu ersetzen", "Um SQL zu vermeiden"], correct: [1] },
+                { id: 190, type: "single", text: "Welche Aussage zu Testen und Dokumentation ist grundlegend richtig?", choices: ["Dokumentation ersetzt Tests", "Dokumentation schafft Transparenz über Vorgehen, Stufen und Ergebnisse", "Nur Abnahmetests sind relevant", "Tests garantieren Fehlerfreiheit"], correct: [1] },
+
+                // ===== Prüfungsspezifisch 191–215 =====
+                { id: 191, type: "single", text: "Welche Aussage zu HTTP-Methoden trifft zu (REST-Kontext)?", choices: ["GET ändert den Serverzustand", "PUT ist idempotent, POST in der Regel nicht", "DELETE ist nie erlaubt", "PATCH ist immer identisch zu PUT"], correct: [1] },
+                { id: 192, type: "multi", text: "Welche HTTP-Statusklassen sind korrekt zugeordnet?", choices: ["1xx – Informational", "2xx – Success", "3xx – Redirection", "4xx/5xx – Client/Server Error"], correct: [0, 1, 2, 3] },
+                { id: 193, type: "single", text: "Welcher Statuscode signalisiert, dass eine Ressource neu erstellt wurde?", choices: ["200 OK", "201 Created", "202 Accepted", "204 No Content"], correct: [1] },
+                { id: 194, type: "single", text: "Was ist im REST-Kontext eine typische Eigenschaft von POST?", choices: ["Idempotent", "Kann mehrfach dieselbe Ressource erzeugen (nicht idempotent)", "Nur Lesezugriff", "Ersetzt immer komplett"], correct: [1] },
+                { id: 195, type: "multi", text: "Was gehört zu einer Transaktion im DB-Umfeld?", choices: ["BEGIN/START TRANSACTION", "COMMIT", "ROLLBACK", "Automatische Teilnahme jeder einzelnen SQL-Anweisung per se ohne DB-Einstellung"], correct: [0, 1, 2] },
+                { id: 196, type: "single", text: "Welche Aussage zu JDBC/Autocommit (allg. DB-Konnektoren) ist korrekt?", choices: ["Oft ist Autocommit standardmäßig aktiv (jede Anweisung sofort wirksam)", "Autocommit existiert nicht", "Autocommit bedeutet automatisch ROLLBACK", "Autocommit erzwingt Transaktionsfehler"], correct: [0] },
+                { id: 197, type: "single", text: "Wofür werden Stored Procedures in RDBMS genutzt?", choices: ["Nur Trigger-Definition", "Als in der DB gespeicherte Prozeduren mit Parametern und Ablaufsteuerung", "Sie ersetzen Benutzerrollen", "Nur zum Löschen von Tabellen"], correct: [1] },
+                { id: 198, type: "single", text: "Welche Aussage zu Triggern ist zutreffend?", choices: ["Trigger gehören immer zu einer Tabelle und laufen vor/nach DML-Operationen", "Trigger sind frei stehende Skripte ohne Bezug zu Tabellen", "Trigger ersetzen Constraints", "Trigger haben keine Wirkung auf Integrität"], correct: [0] },
+                { id: 199, type: "single", text: "Wofür steht ODBC in Datenbankschnittstellen-Kontexten?", choices: ["Open Database Connectivity", "Optimized Data Binary Codec", "Open Document Binary Channel", "Object DB Compiler"], correct: [0] },
+                { id: 200, type: "single", text: "Was beschreibt ein Connection Pool?", choices: ["Ein Logging-Dienst", "Eine Sammlung wiederverwendeter DB-Verbindungen zur Effizienzsteigerung", "Ein Backup-Tool", "Ein Transaktionslog"], correct: [1] },
+                { id: 201, type: "single", text: "Welche Aussage zu MySQL vs. MariaDB ist prüfungsrelevant korrekt (vereinfacht)?", choices: ["Beide sind identisch und bleiben es", "MariaDB ist ein MySQL-Fork mit eigener, communitygetriebener Entwicklung", "MariaDB ist proprietär", "MySQL ist ausschließlich Community-verwaltet"], correct: [1] },
+                { id: 202, type: "single", text: "Welche Aussage zu MariaDB vs. SQLite ist korrekt (Systemwahl)?", choices: ["SQLite ist für große, stark konkurrierte Server-Workloads prädestiniert", "MariaDB eignet sich für serverbasierte, skalierbare Anwendungen; SQLite eher für eingebettete/kleine Setups", "Beide sind immer austauschbar", "SQLite benötigt einen separaten DB-Server"], correct: [1] },
+                { id: 203, type: "multi", text: "Welche Qualitätsmerkmale nach ISO/IEC-Sicht tauchen in den Unterlagen auf (Auswahl)?", choices: ["Funktionale Vollständigkeit/Korrektheit", "Usability", "Security", "Performance/Effizienz"], correct: [0, 1, 2, 3] },
+                { id: 204, type: "single", text: "Was ist Zweck eines Abnahmetests (Acceptance)?", choices: ["Interne Modultests des Entwicklers", "Kundentest nahe Produktivumgebung zur Übergabeentscheidung", "Nur Lasttest", "Nur Code-Style-Prüfung"], correct: [1] },
+                { id: 205, type: "single", text: "Was ist Ziel einer statischen Codeanalyse (allg.)?", choices: ["Zur Laufzeit Fehler finden", "Quellcode automatisiert auf Syntax/Regeln/Potenzialfehler prüfen", "Nur UI-Bedienbarkeit messen", "Datenmigration durchführen"], correct: [1] },
+                { id: 206, type: "single", text: "Welche Rolle hat Debugging im QS-Prozess?", choices: ["Ersetzt Tests", "Gezieltes Auffinden/Beheben von Fehlerursachen im Code zur Laufzeit", "Nur Dokumentation", "Nur Build-Skripte"], correct: [1] },
+                { id: 207, type: "multi", text: "Welche Artefakte gehören zur Testauswertung/-dokumentation?", choices: ["Soll-/Ist-Vergleich je Testfall", "Fehlerprotokolle", "Testergebnisse/Status", "Beliebige Zufallsnotizen ohne Bezug"], correct: [0, 1, 2] },
+                { id: 208, type: "single", text: "Welche Aussage zur Systemtestumgebung ist korrekt?", choices: ["Soll der Produktivumgebung möglichst ähnlich sein", "Darf nichts mit Produktion gemein haben", "Nur lokal auf Entwicklerrechnern", "Nur in der Cloud möglich"], correct: [0] },
+                { id: 209, type: "single", text: "Was beschreibt „include“ zwischen Use Cases im Prüfungszusammenhang knapp?", choices: ["Optionale Erweiterung", "Zwingende Wiederverwendung eines gemeinsamen Teilablaufs", "Vererbung von Akteuren", "UI-Spezifikation"], correct: [1] },
+                { id: 210, type: "single", text: "Welche Aussage zur Testplanung ist korrekt?", choices: ["Ist optional", "Definiert Strategie, Zuständigkeiten und Zeitpunkte für Tests", "Ersetzt Testfälle", "Kommt erst nach Testdurchführung"], correct: [1] },
+                { id: 211, type: "single", text: "Welche Aussage zur „Performanz“ im ISO-Sinn ist prüfungsrelevant?", choices: ["Nur CPU-Takt zählt", "Umfasst Zeitverhalten, Ressourcenverbrauch und Kapazität", "Nur RAM-Grenzen", "Nur Netzwerklatenz"], correct: [1] },
+                { id: 212, type: "multi", text: "Welche Maßnahmen stärken Security in Anwendungen?", choices: ["Authentifizierung/Autorisierung", "Rollen/Berechtigungen", "Schutz vor unautorisierten Zugriffen/Manipulationen", "Nur Logging"], correct: [0, 1, 2] },
+                { id: 213, type: "single", text: "Welche Aussage zur Gebrauchstauglichkeit ist prüfungsrelevant korrekt?", choices: ["Nur ohne Vorkenntnisse nutzbar", "Funktionen müssen auffindbar, Bedienung intuitiv, Design übersichtlich sein", "Nur dunkles Theme nötig", "Nur Kurztasten wichtig"], correct: [1] },
+                { id: 214, type: "single", text: "Was ist bei Testfällen vor der Implementierung sinnvoll festzulegen?", choices: ["Nur die Test-ID", "Erwartete Ergebnisse (Testorakel) und Abnahmekriterien", "Nur Hardware", "Nur Anzahl der Entwickler"], correct: [1] },
+                { id: 215, type: "multi", text: "Welche Aussagen zu HTTP/REST sind richtig (zusammengefasst)?", choices: ["GET – Lesen", "PUT – Erstellen/Aktualisieren idempotent", "POST – Erstellen, nicht idempotent", "DELETE – Entfernen von Ressourcen"], correct: [0, 1, 2, 3] },
+                { id: 216, type: "single", text: "Was ist der Zweck von Pseudocode?", choices: ["Maschinell ausführbare Programmiersprache", "Sprachenunabhängige Beschreibung eines Algorithmus", "Nur grafische Darstellung", "Nur für Datenbanken geeignet"], correct: [1] },
+
+                // Pseudocode
+                { id: 217, type: "single", text: "Welche Eigenschaft zeichnet guten Pseudocode aus?", choices: ["Verwendet konkrete Syntax einer Programmiersprache", "Ist leicht lesbar, strukturiert und logisch eindeutig", "Nutzt ausschließlich englische Schlüsselwörter", "Verwendet möglichst viele Schleifen"], correct: [1] },
+                { id: 218, type: "multi", text: "Welche Grundstrukturen (Kontrollstrukturen) enthält Pseudocode typischerweise?", choices: ["Sequenz (Anweisungsfolge)", "Selektion (Bedingung, if/else)", "Iteration (Wiederholung)", "Parallelisierung (automatisch)"], correct: [0, 1, 2] },
+                { id: 219, type: "single", text: "Wie wird eine Bedingung in Pseudocode meist dargestellt?", choices: ["Nur grafisch im Flussdiagramm", "Mit Schlüsselwort IF … THEN … ELSE … ENDIF", "Mit SELECT … WHEN …", "Mit SQL-ähnlicher Syntax"], correct: [1] },
+                { id: 220, type: "single", text: "Wie werden Wiederholungen (Schleifen) im Pseudocode üblicherweise beschrieben?", choices: ["LOOP … ENDLOOP oder WHILE … ENDWHILE", "Nur durch Pfeile", "Mit SQL-SELECT", "Mit CASE-Verzweigungen"], correct: [0] },
+                { id: 221, type: "multi", text: "Welche Vorteile bietet die Verwendung von Pseudocode?", choices: ["Sprachenunabhängige Kommunikation zwischen Entwicklern", "Frühes Testen der Logik vor Implementierung", "Bessere Dokumentation von Abläufen", "Automatische Codegenerierung"], correct: [0, 1, 2] },
+                { id: 222, type: "single", text: "Welche Regel sollte beim Schreiben von Pseudocode beachtet werden?", choices: ["Syntax exakt an Programmiersprache anlehnen", "Einheitliche Einrückung und klare Strukturierung verwenden", "Variablen ohne Namen nutzen", "Keine Kommentare zulassen"], correct: [1] },
+                { id: 223, type: "single", text: "Wie werden Ein- und Ausgaben im Pseudocode meist dargestellt?", choices: ["Eingabe mit READ, Ausgabe mit WRITE/PRINT", "Nur durch mathematische Symbole", "Mit @Input und @Output", "Über SELECT-Statements"], correct: [0] },
+                { id: 224, type: "multi", text: "Welche typischen Fehlerquellen gibt es bei der Erstellung von Pseudocode?", choices: ["Unklare Bedingungen", "Fehlende Abbruchbedingungen bei Schleifen", "Uneinheitliche Formatierung", "Automatische Übersetzung in Maschinencode"], correct: [0, 1, 2] },
+                { id: 225, type: "single", text: "Worin unterscheidet sich Pseudocode von einem Flussdiagramm?", choices: ["Flussdiagramme sind textbasiert, Pseudocode grafisch", "Pseudocode beschreibt Abläufe textuell, Flussdiagramme visuell", "Beide sind maschinenlesbar", "Pseudocode enthält keine Logik"], correct: [1] }
+
+            ];
+
+            // === AP1 - Abschlussprüfung Teil 1 ===
+            const questionsAP1 = [
+                { id: 2001, type: "single", text: "Was ist ein Betriebssystem?", choices: ["Eine Anwendungssoftware", "Systemsoftware, die Hardware und Anwendungen verwaltet", "Ein Netzwerkprotokoll", "Eine Programmiersprache"], correct: [1] },
+                { id: 2002, type: "multi", text: "Welche Aufgaben hat ein Betriebssystem?", choices: ["Speicherverwaltung", "Prozessverwaltung", "Dateisystemverwaltung", "Webentwicklung"], correct: [0, 1, 2] },
+                { id: 2003, type: "single", text: "Was bedeutet CPU?", choices: ["Computer Processing Unit", "Central Processing Unit", "Core Processing Unit", "Central Program Unit"], correct: [1] }
+            ];
+
+            // === WISO - Wirtschafts- und Sozialkunde ===
+            const questionsWISO = [
+                // -----------------------------
+                // 1) Grundlagen des Wirtschaftens (45 Fragen) – IDs 3001–3045
+                // -----------------------------
+                { id: 3001, type: "single", text: "Was beschreibt das ökonomische Minimalprinzip?", choices: ["Mit gegebenem Mitteleinsatz den größtmöglichen Nutzen erzielen", "Mit minimalem Mitteleinsatz ein vorgegebenes Ziel erreichen", "Mit beliebigen Mitteln ein beliebiges Ziel erreichen", "Mit maximalem Mitteleinsatz ein minimales Ziel erreichen"], correct: [1] },
+                { id: 3002, type: "single", text: "Welche Reihenfolge ist korrekt?", choices: ["Nachfrage → Bedarf → Bedürfnis", "Bedarf → Bedürfnis → Nachfrage", "Bedürfnis → Bedarf → Nachfrage", "Bedürfnis → Nachfrage → Bedarf"], correct: [2] },
+                { id: 3003, type: "single", text: "Welches ist KEIN Produktionsfaktor im volkswirtschaftlichen Sinn?", choices: ["Arbeit", "Boden", "Kapital", "Rabatt"], correct: [3] },
+                { id: 3004, type: "multi", text: "Welche Aussagen zu freien Gütern sind richtig?", choices: ["Sie stehen ohne Preis zur Verfügung", "Sie sind in der Regel knapp", "Beispiel: Luft (in der Regel)", "Sie werden durch den Markt verteilt"], correct: [0, 2] },
+                { id: 3005, type: "single", text: "Wofür steht die Kennzahl Produktivität?", choices: ["Input/Output", "Output/Input", "Gewinn/Kapital", "Erlöse/Kosten"], correct: [1] },
+                { id: 3006, type: "single", text: "Wirtschaftlichkeit berechnet sich als …", choices: ["Ertrag/Aufwand", "Aufwand/Ertrag", "Gewinn/Kapital", "Kapital/Gewinn"], correct: [0] },
+                { id: 3007, type: "single", text: "Rentabilität ist definiert als …", choices: ["Gewinn / Kapital × 100 %", "Erlöse / Kosten × 100 %", "Output / Input × 100 %", "Kapital / Gewinn × 100 %"], correct: [0] },
+                { id: 3008, type: "single", text: "Welche Unternehmensform ist eine juristische Person des Privatrechts?", choices: ["OHG", "GbR", "GmbH", "Einzelunternehmen"], correct: [2] },
+                { id: 3009, type: "single", text: "Was ist ein Konzern?", choices: ["Verschmelzung rechtlich selbstständiger Firmen zu einer neuen", "Zusammenschluss rechtlich selbstständiger Unternehmen unter einheitlicher Leitung", "Befristete Zusammenarbeit mehrerer Unternehmen", "Preisabsprache zwischen Unternehmen"], correct: [1] },
+                { id: 3010, type: "single", text: "Was beschreibt ein Kartell?", choices: ["Rechtsformwechsel", "Preis- oder Mengenabsprachen zwischen Unternehmen", "Fusion zu einem neuen Unternehmen", "Interne Abteilung eines Konzerns"], correct: [1] },
+                { id: 3011, type: "multi", text: "Welche Ziele sind Formal- bzw. Erfolgsziele?", choices: ["Produktivität", "Wirtschaftlichkeit", "Mitarbeiterzufriedenheit", "Rentabilität"], correct: [0, 1, 3] },
+                { id: 3012, type: "single", text: "SMART-Ziele: Wofür steht das 'M'?", choices: ["Messbar", "Modern", "Mutig", "Modular"], correct: [0] },
+                { id: 3013, type: "single", text: "Bei Zielharmonie …", choices: ["schließen sich Ziele gegenseitig aus", "fördern sich Ziele gegenseitig", "sind Ziele unabhängig voneinander", "ist Zielerreichung unmöglich"], correct: [1] },
+                { id: 3014, type: "single", text: "Welches Merkmal trifft auf das Einzelunternehmen zu?", choices: ["Mindesteinlage vorgeschrieben", "Haftung beschränkt", "Inhaber haftet unbeschränkt", "Rechtsform ist juristische Person"], correct: [2] },
+                { id: 3015, type: "single", text: "Welche Aussage zur OHG ist richtig?", choices: ["Mindestens ein Komplementär haftet unbeschränkt", "Gesellschafter haften beschränkt", "Sie hat keinen Firmennamen", "Sie ist keine Personengesellschaft"], correct: [0] },
+                { id: 3016, type: "single", text: "Welche Größe ist Teil der Handelskalkulation vom Bezugspreis zu den Selbstkosten?", choices: ["Kundenskonto", "Handlungskostenzuschlag", "Umsatzsteuer", "Kundenrabatt"], correct: [1] },
+                { id: 3017, type: "single", text: "Der Effektivzins …", choices: ["entspricht immer dem Nominalzins", "enthält alle preisbestimmenden Kostenkomponenten des Kredits", "ist für Vergleiche ungeeignet", "wird vom Kreditnehmer festgelegt"], correct: [1] },
+                { id: 3018, type: "single", text: "TCO (Total Cost of Ownership) berücksichtigt …", choices: ["nur Anschaffungskosten", "nur laufende Kosten", "Anschaffungs- und Nutzungskosten über die Lebensdauer", "nur Entsorgungskosten"], correct: [2] },
+                { id: 3019, type: "single", text: "ROI (Return on Investment) ist …", choices: ["eine Liquiditätskennzahl", "eine Rentabilitätskennzahl", "ein Bilanzposten", "ein Abschreibungsverfahren"], correct: [1] },
+                { id: 3020, type: "single", text: "Amortisationszeit bedeutet …", choices: ["Zeit bis zur steuerlichen Abschreibung", "Zeit bis die kumulierten Rückflüsse die Investition decken", "Zeit bis zum Break-even der Erlöse", "Planungszeitraum der Investition"], correct: [1] },
+                { id: 3021, type: "multi", text: "Welche sind typische Kreditarten?", choices: ["Annuitätendarlehen", "Abzahlungsdarlehen", "Endfälliges Darlehen", "Tilgungsfreies Darlehen ohne Zinsen"], correct: [0, 1, 2] },
+                { id: 3022, type: "single", text: "Leasing ist rechtlich betrachtet eher …", choices: ["Kauf auf Raten", "langfristige Miete", "Schenkung", "Darlehen"], correct: [1] },
+                { id: 3023, type: "single", text: "Welche Sicherung ist KEINE Personalsicherheit?", choices: ["Bürgschaft", "Zession (Forderungsabtretung)", "Patronatserklärung", "Selbstschuldnerische Bürgschaft"], correct: [1] },
+                { id: 3024, type: "single", text: "Factoring bedeutet …", choices: ["Kauf von Waren auf Ziel", "Verkauf von Forderungen", "Kaufvertrag mit Eigentumsvorbehalt", "Beteiligungsfinanzierung"], correct: [1] },
+                { id: 3025, type: "single", text: "Welche Aussage zur Nutzwertanalyse trifft zu?", choices: ["Nur quantitative Kriterien", "Nur Preise werden verglichen", "Qualitative Kriterien werden gewichtet bewertet", "Sie ist identisch mit einer Kostenvergleichsrechnung"], correct: [2] },
+                { id: 3026, type: "multi", text: "Welche Kosten zählen zu Bezugskosten?", choices: ["Frachten", "Verpackung", "Zölle", "Kundenskonto"], correct: [0, 1, 2] },
+                { id: 3027, type: "single", text: "Gemeinkosten sind …", choices: ["direkt einem Kostenträger zurechenbar", "nur Materialkosten", "nur Personalkosten", "nur über Schlüssel verteilbar"], correct: [3] },
+                { id: 3028, type: "single", text: "Das ökonomische Maximalprinzip bedeutet …", choices: ["Gegebenes Ziel mit minimalem Mitteleinsatz erreichen", "Mit gegebenen Mitteln den größtmöglichen Erfolg erzielen", "Mit minimalen Mitteln ein beliebiges Ziel erreichen", "Mit maximalen Mitteln ein minimales Ziel erreichen"], correct: [1] },
+                { id: 3029, type: "multi", text: "Welche Merkmale sprechen für eine GmbH?", choices: ["Stammkapital erforderlich", "Geschäftsführung nur durch Aufsichtsrat", "Haftung grundsätzlich beschränkt", "Eintragung ins Handelsregister"], correct: [0, 2, 3] },
+                { id: 3030, type: "single", text: "Ein Polypol ist gekennzeichnet durch …", choices: ["einen Anbieter, viele Nachfrager", "viele Anbieter, viele Nachfrager", "wenige Anbieter, viele Nachfrager", "einen Nachfrager, viele Anbieter"], correct: [1] },
+                { id: 3031, type: "single", text: "E-Commerce B2C bedeutet …", choices: ["Business to Consumer", "Business to Company", "Bank to Client", "Broker to Customer"], correct: [0] },
+                { id: 3032, type: "single", text: "Welche Kennzahl passt: Gewinn / eingesetztes Kapital?", choices: ["Produktivität", "Wirtschaftlichkeit", "Rentabilität", "Liquidität 2. Grades"], correct: [2] },
+                { id: 3033, type: "multi", text: "Welche Aussagen zur ABC-Analyse (Kunden) sind korrekt?", choices: ["A-Kunden sind besonders umsatz-/ertragstark", "B-Kunden erhalten keine Betreuung", "C-Kunden haben meist geringen Umsatzanteil", "Dient der Priorisierung von Maßnahmen"], correct: [0, 2, 3] },
+                { id: 3034, type: "single", text: "Beim Annuitätendarlehen …", choices: ["ist die Rate konstant, Zins- und Tilgungsanteil verändern sich", "ist die Tilgung konstant, Rate verändert sich", "werden nur Zinsen gezahlt, Tilgung am Ende", "ist keine Zinszahlung nötig"], correct: [0] },
+                { id: 3035, type: "single", text: "Welche Rechtsform ist eine Kapitalgesellschaft?", choices: ["KG", "OHG", "GmbH & Co. KG", "AG"], correct: [3] },
+                { id: 3036, type: "multi", text: "Welche Größen gehören typischerweise zur Kalkulationskette zum Listenverkaufspreis (netto)?", choices: ["Selbstkosten", "Gewinnaufschlag", "Kundenskonto (im Hundert)", "Kundenrabatt (im Hundert)"], correct: [0, 1, 2, 3] },
+                { id: 3037, type: "single", text: "Ein ARGE/Konsortium ist …", choices: ["befristete Zusammenarbeit von Unternehmen", "Preisabrede", "Unternehmensverschmelzung", "Rechtsformwechsel"], correct: [0] },
+                { id: 3038, type: "single", text: "Was ist typischer Bestandteil von Compliance?", choices: ["Missachtung gesetzlicher Vorschriften", "Einhaltung von Gesetzen und Richtlinien", "Nur Marketingregeln", "Nur Steueroptimierung"], correct: [1] },
+                { id: 3039, type: "multi", text: "Welche Finanzierungsarten zählen zur Außenfinanzierung?", choices: ["Einlagenfinanzierung", "Beteiligungsfinanzierung", "Kreditfinanzierung", "Selbstfinanzierung"], correct: [0, 1, 2] },
+                { id: 3040, type: "single", text: "Zession bedeutet …", choices: ["Übertragung von Eigentum an Waren", "Abtretung von Forderungen", "Pfändung von Lohn", "Abschluss eines Mietvertrags"], correct: [1] },
+                { id: 3041, type: "single", text: "Welches Ziel ist KEIN qualitatives Ziel?", choices: ["Sozialer Ausgleich", "Lebenswerte Umwelt", "Wirtschaftswachstum (reales BIP)", "Arbeitsschutz"], correct: [2] },
+                { id: 3042, type: "multi", text: "Welche Merkmale kennzeichnen wirtschaftliche Güter?", choices: ["Knappheit", "Preis", "Nicht rivalisierend", "Nicht kostenlos"], correct: [0, 1, 3] },
+                { id: 3043, type: "single", text: "Ein Werkvertrag verpflichtet …", choices: ["zum bloßen Bemühen", "zum Herbeiführen eines Erfolgs", "zur kostenlosen Leistung", "zur Überlassung von Personal"], correct: [1] },
+                { id: 3044, type: "single", text: "Ein Dienstvertrag verpflichtet …", choices: ["zum Erfolg", "zum Werklohn", "zum Wirken (Bemühen) als solchem", "zur Eigentumsübertragung"], correct: [2] },
+                { id: 3045, type: "single", text: "Welcher Zahlungsweg ist typischerweise sofort final?", choices: ["SEPA-Lastschrift", "SEPA-Überweisung", "Barzahlung", "Rechnungskauf"], correct: [2] },
+
+                // -----------------------------
+                // 2) Rechtliche Rahmenbedingungen (38 Fragen) – IDs 3046–3083
+                // -----------------------------
+                { id: 3046, type: "single", text: "Wann ist eine natürliche Person rechtsfähig?", choices: ["Mit Abschluss der Schule", "Mit Vollendung des 7. Lebensjahres", "Mit Vollendung der Geburt", "Mit 18 Jahren"], correct: [2] },
+                { id: 3047, type: "single", text: "Beschränkt geschäftsfähig sind Personen …", choices: ["unter 7 Jahren", "von 7 bis unter 18 Jahren", "ab 18 Jahren", "ab 21 Jahren"], correct: [1] },
+                { id: 3048, type: "single", text: "Eine Willenserklärung ist …", choices: ["eine Gefälligkeit", "die Äußerung eines Rechtsfolgewillens", "immer schriftlich", "nur mündlich wirksam"], correct: [1] },
+                { id: 3049, type: "multi", text: "Welche Elemente braucht ein Kaufvertrag?", choices: ["Antrag (Angebot)", "Annahme", "Zahlung innerhalb von 14 Tagen", "Schriftform"], correct: [0, 1] },
+                { id: 3050, type: "single", text: "Eine Anpreisung ist …", choices: ["ein verbindliches Angebot", "eine rechtlich unverbindliche Aufforderung", "eine Annahme", "eine Ablehnung"], correct: [1] },
+                { id: 3051, type: "single", text: "Welche Aussage zur Nichtigkeit ist korrekt?", choices: ["Nichtigkeit wirkt ex nunc", "Nichtigkeit wirkt ex tunc", "Nichtigkeit macht den Vertrag wirksam", "Nichtigkeit kann nicht festgestellt werden"], correct: [1] },
+                { id: 3052, type: "single", text: "Anfechtung wegen Irrtums führt …", choices: ["zur Wirksamkeit des Geschäfts", "zur Unwirksamkeit ex tunc", "nur zu Schadensersatz", "zur Formnichtigkeit"], correct: [1] },
+                { id: 3053, type: "single", text: "Eigentum ist …", choices: ["tatsächliche Herrschaft über eine Sache", "rechtliche Herrschaft über eine Sache", "nur Besitz", "gleichbedeutend mit Gewahrsam"], correct: [1] },
+                { id: 3054, type: "single", text: "Besitz ist …", choices: ["rechtliche Herrschaft", "tatsächliche Herrschaft", "nur Eigentum", "nur bei beweglichen Sachen möglich"], correct: [1] },
+                { id: 3055, type: "single", text: "Eigentumsvorbehalt bedeutet …", choices: ["Eigentum geht mit Übergabe über", "Eigentum geht erst mit vollständiger Zahlung über", "Besitz geht nie über", "es gibt kein Zurückbehaltungsrecht"], correct: [1] },
+                { id: 3056, type: "multi", text: "Welche Vertragsstörungen sind typische Sachmängelrechte des Käufers?", choices: ["Nacherfüllung", "Rücktritt", "Minderung", "Schadensersatz"], correct: [0, 1, 2, 3] },
+                { id: 3057, type: "single", text: "Lieferverzug liegt vor, wenn …", choices: ["der Käufer nicht zahlt", "der Verkäufer nicht innerhalb der Frist liefert und ermahnt wurde (sofern nötig)", "der Käufer die Ware nicht annimmt", "ein Sachmangel vorliegt"], correct: [1] },
+                { id: 3058, type: "single", text: "Annahmeverzug liegt vor, wenn …", choices: ["der Käufer die fällige, mangelfreie Leistung nicht abnimmt", "der Verkäufer zu spät liefert", "ein Mangel vorliegt", "der Preis zu hoch ist"], correct: [0] },
+                { id: 3059, type: "single", text: "Die regelmäßige Verjährungsfrist im BGB beträgt …", choices: ["6 Monate", "1 Jahr", "2 Jahre", "3 Jahre"], correct: [3] },
+                { id: 3060, type: "single", text: "Die Verjährung bei Mängeln an neu hergestellten Sachen beträgt regelmäßig …", choices: ["6 Monate", "1 Jahr", "2 Jahre", "3 Jahre"], correct: [2] },
+                { id: 3061, type: "single", text: "Fernabsatzverträge sind …", choices: ["Verträge mit Unternehmern unter ausschließlicher Verwendung von Fernkommunikationsmitteln mit Verbrauchern", "nur Verträge im Ladenlokal", "nur Verträge zwischen Unternehmern", "mündlich stets unwirksam"], correct: [0] },
+                { id: 3062, type: "multi", text: "Welche Informationspflichten hat ein Unternehmer im Fernabsatz typischerweise?", choices: ["Widerrufsrecht", "Identität/Kontakt", "Wesentliche Eigenschaften der Ware", "Pflicht zur Barzahlung"], correct: [0, 1, 2] },
+                { id: 3063, type: "single", text: "AGB werden Bestandteil eines Vertrages, wenn …", choices: ["sie irgendwo online stehen", "der Verwender bei Vertragsschluss ausdrücklich einbezieht und der andere zustimmt", "der Kunde sie nicht liest", "sie nicht widersprochen werden können"], correct: [1] },
+                { id: 3064, type: "single", text: "Welches ist KEINE Handelsgesellschaft?", choices: ["OHG", "KG", "GbR", "GmbH"], correct: [2] },
+                { id: 3065, type: "single", text: "Die Firma ist …", choices: ["die Rechtsform", "der Name des Kaufmanns/Unternehmens", "immer eine GmbH", "nur der Markenname"], correct: [1] },
+                { id: 3066, type: "single", text: "Das Handelsregister wird geführt …", choices: ["von der IHK", "vom Amtsgericht", "vom Finanzamt", "von der Gemeinde"], correct: [1] },
+                { id: 3067, type: "single", text: "Welcher Vertrag verpflichtet zum Erfolg?", choices: ["Dienstvertrag", "Arbeitsvertrag", "Werkvertrag", "Mietvertrag"], correct: [2] },
+                { id: 3068, type: "single", text: "Der Arbeitsvertrag ist rechtlich ein …", choices: ["Werkvertrag", "Dienstvertrag", "Kaufvertrag", "Mietvertrag"], correct: [1] },
+                { id: 3069, type: "single", text: "Verbrauchsgüterkauf ist …", choices: ["Kauf zwischen Verbraucher und Verbraucher", "Kauf beweglicher Sachen Unternehmer → Verbraucher", "Kauf zwischen Unternehmern", "Kauf zwischen Unternehmen und Staat"], correct: [1] },
+                { id: 3070, type: "multi", text: "Welche Rechte hat der Käufer bei Lieferverzug (grundsätzlich)?", choices: ["Schadensersatz wegen Verzug", "Rücktritt nach Fristsetzung", "Nacherfüllung", "Minderung ohne Mangel"], correct: [0, 1] },
+                { id: 3071, type: "single", text: "Ein fixierter Liefertermin („Fixgeschäft“) …", choices: ["hat keine besondere Wirkung", "kann Verzug ohne Mahnung begründen", "verlängert die Frist", "hebt Vertragsstrafen auf"], correct: [1] },
+                { id: 3072, type: "single", text: "Das Widerrufsrecht im Fernabsatz beträgt regelmäßig …", choices: ["7 Tage", "14 Tage", "30 Tage", "1 Jahr"], correct: [1] },
+                { id: 3073, type: "single", text: "Sachenrecht: Eigentum an beweglichen Sachen geht über durch …", choices: ["Einigung und Übergabe", "Zahlung", "Rechnung", "Mahnung"], correct: [0] },
+                { id: 3074, type: "single", text: "Ist Schriftform immer erforderlich?", choices: ["Ja, immer", "Nein, nur wenn gesetzlich vorgeschrieben", "Nur bei Kaufverträgen", "Nur bei Dienstverträgen"], correct: [1] },
+                { id: 3075, type: "multi", text: "Welche Rechtsfolgen hat die Anfechtung?", choices: ["Rechtsgeschäft ist von Anfang an nichtig", "Anfechtungsgegner kann Vertrauensschaden ersetzt verlangen", "Rechtsgeschäft bleibt wirksam", "Anfechtung ist nie möglich"], correct: [0, 1] },
+                { id: 3076, type: "single", text: "Gewährleistung und Garantie …", choices: ["sind identisch", "Gewährleistung ist gesetzlich, Garantie ist freiwillig", "beide freiwillig", "beide gesetzlich"], correct: [1] },
+                { id: 3077, type: "single", text: "Im BGB gilt der Grundsatz der …", choices: ["Tarifautonomie", "Privatautonomie", "Staatsautonomie", "Konzessionspflicht"], correct: [1] },
+                { id: 3078, type: "single", text: "Welche Gesellschaft hat mindestens einen Komplementär und einen Kommanditisten?", choices: ["OHG", "KG", "GmbH", "AG"], correct: [1] },
+                { id: 3079, type: "multi", text: "Welche sind typische Pflichtverletzungen bei Kaufverträgen?", choices: ["Lieferverzug", "Schlechtleistung", "Annahmeverzug", "Zahlungsverzug"], correct: [0, 1, 2, 3] },
+                { id: 3080, type: "single", text: "Zahlungsverzug tritt ein, wenn …", choices: ["sofort nach Rechnungserhalt", "nach Fälligkeit und Mahnung oder kalendermäßiger Bestimmung", "nie", "erst nach 6 Monaten"], correct: [1] },
+                { id: 3081, type: "single", text: "AGB-Klauseln, die überraschend sind, …", choices: ["werden trotzdem Vertragsbestandteil", "sind unwirksam", "sind nur im Fernabsatz zulässig", "benötigen keine Zustimmung"], correct: [1] },
+                { id: 3082, type: "single", text: "Wer trägt die Beweislast für einen Sachmangel nach Gefahrübergang (Verbrauchsgüterkauf, innerhalb der Beweislastumkehrfrist)?", choices: ["Zunächst der Verkäufer", "Immer der Käufer", "Niemand", "Das Gericht"], correct: [0] },
+                { id: 3083, type: "single", text: "Welche Registereintragung wirkt deklaratorisch (typisch)?", choices: ["Eintragung der Prokura", "Eintragung eines Kaufmanns kraft Handelsgewerbes", "Gründung einer GmbH", "AG-Gründung"], correct: [1] },
+
+                // -----------------------------
+                // 3) Menschliche Arbeit im Betrieb (37 Fragen) – IDs 3084–3120
+                // -----------------------------
+                { id: 3084, type: "single", text: "Das BBiG regelt …", choices: ["Urlaubsansprüche von Beamten", "die Berufsausbildung", "nur Hochschulprüfungen", "Tarifverhandlungen"], correct: [1] },
+                { id: 3085, type: "single", text: "Probezeit im Ausbildungsverhältnis beträgt …", choices: ["mindestens 1 Monat, höchstens 4 Monate", "immer 6 Monate", "mindestens 3 Monate", "höchstens 12 Monate"], correct: [0] },
+                { id: 3086, type: "single", text: "Kündigung in der Probezeit (Ausbildung) ist …", choices: ["nur mit Grund möglich", "fristlos und ohne Angabe von Gründen möglich", "nur mit Frist möglich", "gar nicht möglich"], correct: [1] },
+                { id: 3087, type: "single", text: "Nach der Probezeit kann der Azubi kündigen …", choices: ["nur fristlos ohne Grund", "mit 4 Wochen Frist, wenn er die Berufsausbildung aufgeben/wechseln will", "gar nicht", "nur mit Zustimmung der IHK"], correct: [1] },
+                { id: 3088, type: "multi", text: "Pflichten der Ausbildenden sind u. a.:", choices: ["Ausbildungsmittel bereitstellen", "Freistellung für Berufsschule", "Ausbildungsziel sicherstellen", "Jährliche Bonuszahlung garantieren"], correct: [0, 1, 2] },
+                { id: 3089, type: "multi", text: "Pflichten der Auszubildenden sind u. a.:", choices: ["Lernpflicht", "Weisungen folgen", "Geheimhaltungspflicht", "Ausbilder kontrollieren"], correct: [0, 1, 2] },
+                { id: 3090, type: "single", text: "Das JArbSchG gilt …", choices: ["für alle Arbeitnehmer", "für Kinder und Jugendliche bis 18 (mit Differenzierung)", "nur für Studenten", "nur für Beamte"], correct: [1] },
+                { id: 3091, type: "single", text: "Tägliche Höchstarbeitszeit für Jugendliche beträgt regelmäßig …", choices: ["8 Stunden (mit Ausnahmen)", "10 Stunden", "6 Stunden", "12 Stunden"], correct: [0] },
+                { id: 3092, type: "single", text: "Arbeitszeitgesetz: Werktägliche Höchstarbeitszeit für Erwachsene beträgt regelmäßig …", choices: ["6 Stunden", "8 Stunden (Ausgleich möglich)", "10 Stunden ohne Ausgleich", "12 Stunden"], correct: [1] },
+                { id: 3093, type: "single", text: "Entgeltfortzahlungsgesetz regelt …", choices: ["Urlaubstage", "Lohnfortzahlung im Krankheitsfall", "Kündigungsfristen", "Elternzeit"], correct: [1] },
+                { id: 3094, type: "single", text: "Mutterschutzgesetz schützt …", choices: ["nur Väter", "werdende und stillende Mütter", "nur Ausbilder", "nur Beamte"], correct: [1] },
+                { id: 3095, type: "single", text: "Bundesurlaubsgesetz: Mindesturlaub bei 6-Tage-Woche ist …", choices: ["20 Tage", "24 Werktage", "30 Tage", "12 Tage"], correct: [1] },
+                { id: 3096, type: "single", text: "Ordentliche Kündigungsfrist nach § 622 BGB (Grundfall Arbeitnehmer) ist …", choices: ["2 Wochen zum Monatsende", "4 Wochen zum 15. oder zum Monatsende", "3 Monate zum Quartalsende", "keine Frist"], correct: [1] },
+                { id: 3097, type: "single", text: "Besonderer Kündigungsschutz gilt u. a. für …", choices: ["Betriebsratsmitglieder", "Azubis während der Probezeit", "alle mit Homeoffice", "leitende Angestellte"], correct: [0] },
+                { id: 3098, type: "single", text: "Der Betriebsrat kann gewählt werden, wenn im Betrieb …", choices: ["mindestens 5 wahlberechtigte Arbeitnehmer, davon 3 wählbar", "mindestens 20 Arbeitnehmer", "mindestens 100 Arbeitnehmer", "mindestens 3 Azubis"], correct: [0] },
+                { id: 3099, type: "single", text: "Amtszeit des Betriebsrats beträgt …", choices: ["2 Jahre", "4 Jahre", "5 Jahre", "6 Jahre"], correct: [1] },
+                { id: 3100, type: "multi", text: "Mitbestimmungsrechte des Betriebsrats nach § 87 BetrVG betreffen u. a.:", choices: ["Arbeitszeitregelungen", "technische Überwachungseinrichtungen", "Vergütungshöhen in Tarifverträgen", "Urlaubsgrundsätze"], correct: [0, 1, 3] },
+                { id: 3101, type: "single", text: "Die JAV vertritt …", choices: ["alle Mitarbeiter über 50", "Jugendliche und Azubis bis 25", "nur Führungskräfte", "nur Beamte"], correct: [1] },
+                { id: 3102, type: "single", text: "Tarifverträge werden geschlossen zwischen …", choices: ["Betriebsrat und Arbeitgeberverband", "Gewerkschaften und Arbeitgeberverbänden/Arbeitgebern", "IHK und Gewerkschaft", "Betriebsrat und Arbeitnehmer"], correct: [1] },
+                { id: 3103, type: "single", text: "Tarifautonomie bedeutet …", choices: ["Staat setzt Löhne fest", "Tarifparteien regeln Arbeitsbedingungen ohne Staat", "Gerichte bestimmen Löhne", "Arbeitgeber allein entscheidet"], correct: [1] },
+                { id: 3104, type: "multi", text: "Welche Versicherungen gehören zu den fünf Sozialversicherungen?", choices: ["Krankenversicherung", "Pflegeversicherung", "Rentenversicherung", "Arbeitslosenversicherung", "Unfallversicherung"], correct: [0, 1, 2, 3, 4] },
+                { id: 3105, type: "single", text: "Solidaritätsprinzip bedeutet …", choices: ["jeder zahlt nach Lust und Laune", "Starke helfen Schwachen durch Beiträge", "jeder zahlt den gleichen Betrag", "nur privat Versicherte profitieren"], correct: [1] },
+                { id: 3106, type: "single", text: "Beiträge zur gesetzlichen Unfallversicherung tragen …", choices: ["Arbeitnehmer und Arbeitgeber je 50 %", "nur der Arbeitgeber", "nur der Arbeitnehmer", "der Staat"], correct: [1] },
+                { id: 3107, type: "single", text: "In welcher Steuerklasse sind in der Regel Alleinstehende?", choices: ["Klasse 2", "Klasse 1", "Klasse 4", "Klasse 6"], correct: [1] },
+                { id: 3108, type: "multi", text: "Welche Elemente finden sich typischerweise auf der Lohnabrechnung?", choices: ["Bruttolohn", "Arbeitgeberanteile SV", "Nettoauszahlung", "Umsatzsteuer"], correct: [0, 1, 2] },
+                { id: 3109, type: "single", text: "Betriebsvereinbarungen werden geschlossen zwischen …", choices: ["Betriebsrat und Arbeitgeber", "Gewerkschaft und Arbeitgeberverband", "IHK und Unternehmen", "Betriebsrat und Arbeitnehmern"], correct: [0] },
+                { id: 3110, type: "single", text: "Ein Arbeitsvertrag ist …", choices: ["formfrei, soweit keine besondere Form vorgeschrieben ist", "immer notariell zu beurkunden", "nur mündlich gültig", "nur schriftlich gültig"], correct: [0] },
+                { id: 3111, type: "single", text: "Werk- vs. Dienstvertrag im Arbeitsverhältnis: Der Arbeitsvertrag ist …", choices: ["Werkvertrag", "Dienstvertrag", "Mietvertrag", "Kaufvertrag"], correct: [1] },
+                { id: 3112, type: "multi", text: "Nebenpflichten des Arbeitnehmers sind u. a.:", choices: ["Treuepflicht", "Verschwiegenheit", "Wettbewerbsverbot (vertraglich)", "Urlaubsgewährung"], correct: [0, 1, 2] },
+                { id: 3113, type: "single", text: "Urlaubsanspruch bemisst sich grundsätzlich nach …", choices: ["Kalenderjahren und Arbeitstagen (Werktage/Arbeitstage)", "Gehaltshöhe", "Wohnort", "Steuerklasse"], correct: [0] },
+                { id: 3114, type: "single", text: "Eine außerordentliche Kündigung setzt voraus …", choices: ["immer Abfindung", "wichtigen Grund", "Zustimmung der JAV", "Probezeit"], correct: [1] },
+                { id: 3115, type: "single", text: "Mitbestimmung in wirtschaftlichen Angelegenheiten ist …", choices: ["uneingeschränkt", "informatorisch/beratend (Mitwirkung)", "immer erzwingbar", "rechtlich ohne Grundlage"], correct: [1] },
+                { id: 3116, type: "single", text: "JAV: Mindestvoraussetzung zur Bildung ist …", choices: ["mindestens 5 Jugendliche/Azubis", "mindestens 50 Azubis", "mindestens 5 Betriebsräte", "kein Betriebsrat nötig"], correct: [0] },
+                { id: 3117, type: "single", text: "Wer wählt die JAV?", choices: ["alle Mitarbeiter", "alle Jugendlichen und Azubis unter 25", "nur Betriebsrat", "nur Arbeitgeber"], correct: [1] },
+                { id: 3118, type: "single", text: "Tarifverträge können regeln …", choices: ["Mindestlöhne, Arbeitszeiten, Urlaub", "nur Kantinenpreise", "nur Steuern", "nur Unfallversicherung"], correct: [0] },
+                { id: 3119, type: "multi", text: "Kollektives Arbeitsrecht umfasst …", choices: ["Tarifvertragsrecht", "Betriebsverfassungsrecht", "Arbeitskampfrecht", "Privatrecht der Verbraucher"], correct: [0, 1, 2] },
+                { id: 3120, type: "single", text: "Individuelles Arbeitsrecht betrifft …", choices: ["Verhältnis Arbeitgeber ↔ Arbeitnehmer", "Verhältnis Gewerkschaft ↔ Verband", "Verhältnis Staat ↔ Bürger", "nur Beamtenrecht"], correct: [0] },
+
+                // -----------------------------
+                // 4) Wirtschaftsordnung & Wirtschaftspolitik (30 Fragen) – IDs 3121–3150
+                // -----------------------------
+                { id: 3121, type: "single", text: "Die Soziale Marktwirtschaft verbindet …", choices: ["Planwirtschaft und Anarchie", "Marktprinzip und sozialen Ausgleich", "Reine Planwirtschaft und Monopole", "Zufallsprinzip und Staatsfixierung"], correct: [1] },
+                { id: 3122, type: "single", text: "Im vollkommenen Markt gilt u. a. …", choices: ["heterogene Güter", "vollständige Markttransparenz", "persönliche Präferenzen", "räumliche Differenzierung"], correct: [1] },
+                { id: 3123, type: "single", text: "Der Gleichgewichtspreis liegt dort, wo …", choices: ["Nachfrage > Angebot", "Angebot > Nachfrage", "Angebot = Nachfrage", "Kosten = Erlöse"], correct: [2] },
+                { id: 3124, type: "single", text: "Nachfrageorientierte Wirtschaftspolitik stärkt …", choices: ["Kaufkraft/Nachfrage", "ausschließlich Anbieter", "nur Exportsubventionen", "nur Mindestlöhne"], correct: [0] },
+                { id: 3125, type: "single", text: "Angebotsorientierte Politik setzt u. a. auf …", choices: ["Steuersenkungen für Unternehmen", "reine Lohnsubventionen an Konsumenten", "Höchstpreise", "nur Importzölle"], correct: [0] },
+                { id: 3126, type: "multi", text: "Welche Ziele gehören zum Magischen Viereck?", choices: ["Preisniveaustabilität", "Vollbeschäftigung", "Außenwirtschaftliches Gleichgewicht", "Angemessenes Wirtschaftswachstum"], correct: [0, 1, 2, 3] },
+                { id: 3127, type: "single", text: "Inflation bedeutet …", choices: ["allgemeines Sinken des Preisniveaus", "allgemeines Steigen des Preisniveaus", "nur höhere Löhne", "nur steigende Exporte"], correct: [1] },
+                { id: 3128, type: "single", text: "Deflation ist problematisch, weil …", choices: ["die Nachfrage oft aufgeschoben wird", "jeder mehr kauft", "die Löhne automatisch steigen", "die Exporte steigen"], correct: [0] },
+                { id: 3129, type: "single", text: "Vollbeschäftigung bedeutet …", choices: ["0 % Arbeitslose", "Arbeitslosigkeit nahe der natürlichen Rate", "50 % Arbeitslose", "nur Teilzeitstellen"], correct: [1] },
+                { id: 3130, type: "single", text: "Das reale BIP misst …", choices: ["Wertschöpfung zu laufenden Preisen", "Wertschöpfung preisbereinigt", "nur Exporte", "nur Importe"], correct: [1] },
+                { id: 3131, type: "multi", text: "Welche Konjunkturphasen werden typischerweise unterschieden?", choices: ["Aufschwung", "Boom", "Rezession", "Depression"], correct: [0, 1, 2, 3] },
+                { id: 3132, type: "single", text: "Ein Polypol führt i. d. R. zu …", choices: ["einem fairen Preisbildungsprozess", "Marktversagen", "immer Monopolpreisen", "keinem Wettbewerb"], correct: [0] },
+                { id: 3133, type: "single", text: "Ein Höchstpreis (z. B. Mietendeckel) führt bei starker Nachfrage typischerweise zu …", choices: ["Nachfrageüberhang", "Angebotsüberhang", "Gleichgewicht", "höherem Preis"], correct: [0] },
+                { id: 3134, type: "single", text: "Ein Mindestpreis (z. B. Mindestlohn) kann bei niedriger Nachfrage zu … führen", choices: ["Angebotsüberhang", "Nachfrageüberhang", "keiner Auswirkung", "automatisch höherem Output"], correct: [0] },
+                { id: 3135, type: "multi", text: "Welche staatlichen Eingriffe sind marktkonform?", choices: ["Subventionen/Steuererleichterungen", "Mindestpreise", "Höchstpreise", "Nachfrageanreize (z. B. Prämien)"], correct: [0, 3] },
+                { id: 3136, type: "single", text: "Lohnsteuer ist …", choices: ["eine eigene Steuerart", "Teil der Einkommensteuer", "gleich Umsatzsteuer", "nur für Selbstständige"], correct: [1] },
+                { id: 3137, type: "single", text: "Wer führt die Lohnsteuer ab?", choices: ["Arbeitnehmer an Finanzamt", "Arbeitgeber ans Finanzamt", "Betriebsrat", "IHK"], correct: [1] },
+                { id: 3138, type: "single", text: "Der Grundfreibetrag …", choices: ["macht das Existenzminimum steuerfrei", "gilt nur für Rentner", "gilt nicht für Ledige", "ist identisch mit Solidaritätszuschlag"], correct: [0] },
+                { id: 3139, type: "multi", text: "Welche Effekte trifft Inflation typischerweise?", choices: ["Sparer verlieren Kaufkraft", "Schuldner profitieren tendenziell", "Sachwerte können sich wertstabiler verhalten", "Alle Reallöhne steigen automatisch"], correct: [0, 1, 2] },
+                { id: 3140, type: "single", text: "Sozialversicherung basiert u. a. auf …", choices: ["Versicherungsprinzip und Solidarität", "nur Kapitaldeckung", "nur Steuerfinanzierung", "Zufallsprinzip"], correct: [0] },
+                { id: 3141, type: "single", text: "Die gesetzliche Unfallversicherung finanziert sich …", choices: ["aus Beiträgen der Arbeitnehmer", "aus Beiträgen der Arbeitgeber", "aus der Lohnsteuer", "aus dem Bundeshaushalt"], correct: [1] },
+                { id: 3142, type: "single", text: "Das reale Wirtschaftswachstum wird gemessen am …", choices: ["nominalen BIP", "realen BIP", "BNE nominal", "nur an Exporten"], correct: [1] },
+                { id: 3143, type: "single", text: "Außenwirtschaftliches Gleichgewicht bedeutet …", choices: ["Exporte = 0", "Wert der Im- und Exporte im Gleichgewicht", "nur Importüberschüsse", "nur Exportüberschüsse"], correct: [1] },
+                { id: 3144, type: "single", text: "Welches Ziel steht typischerweise im Zielkonflikt mit Preisniveaustabilität?", choices: ["Wirtschaftswachstum", "Sozialer Ausgleich", "Lebenswerte Umwelt", "Tarifautonomie"], correct: [0] },
+                { id: 3145, type: "multi", text: "Welche Maßnahmen sind klassisch nachfrageorientiert?", choices: ["Staatsausgaben erhöhen", "Steuern für private Haushalte senken", "Investitionszulagen ausschließlich für Unternehmen", "Kurzarbeitergeld ausweiten"], correct: [0, 1, 3] },
+                { id: 3146, type: "single", text: "Welche Marktform birgt die Gefahr von Preisabsprachen besonders?", choices: ["Polypol", "Oligopol", "Monopol", "vollkommener Markt"], correct: [1] },
+                { id: 3147, type: "single", text: "Der Generationenvertrag beschreibt …", choices: ["Kapitalgedeckte Rente", "Umlagefinanziertes Rentensystem", "Private Lebensversicherung", "Staatliche Subventionen für Unternehmen"], correct: [1] },
+                { id: 3148, type: "single", text: "Steuerklasse IV wird typischerweise gewählt von …", choices: ["Alleinstehenden", "Verheirateten mit ähnlichem Einkommen", "Verheirateten ohne Einkommen", "Nebenjobbern"], correct: [1] },
+                { id: 3149, type: "multi", text: "Welche Faktoren verschieben die Nachfragekurve nach rechts (ceteris paribus)?", choices: ["Einkommensanstieg", "Preis sinkt (Bewegung auf der Kurve, nicht Verschiebung!)", "positive Erwartungen", "Zunahme der Bevölkerung"], correct: [0, 2, 3] },
+                { id: 3150, type: "single", text: "Welche Größe bildet die Grundlage für die Progression bei der Einkommensteuer?", choices: ["Nettovermögen", "zu versteuerndes Einkommen", "Bruttolohn ohne Abzüge", "Nettolohn"], correct: [1] },
+                // A) 25 Grundverständnis-Fragen – IDs 3151–3175
+                // ---------------------------------------------
+                { id: 3151, type: "single", text: "Was ist der Unterschied zwischen Bedarf und Nachfrage?", choices: ["Bedarf ist der durch Kaufkraft gedeckte Wunsch, Nachfrage der unkonkrete Wunsch", "Bedarf ist ein konkreter Wunsch, Nachfrage ist der durch Kaufkraft gedeckte Bedarf", "Es gibt keinen Unterschied", "Nachfrage ist nur im Großhandel relevant"], correct: [1] },
+                { id: 3152, type: "single", text: "Welche Aussage beschreibt das Maximalprinzip korrekt?", choices: ["Mit gegebenen Mitteln maximalen Output erzielen", "Mit minimalen Mitteln ein vorgegebenes Ziel erreichen", "Mit beliebigen Mitteln beliebigen Output erzielen", "Mit maximalen Mitteln minimalen Output erzielen"], correct: [0] },
+                { id: 3153, type: "multi", text: "Welche Merkmale kennzeichnen den vollkommenen Markt?", choices: ["Homogene Güter", "Vollständige Markttransparenz", "Zeitliche Differenzierung", "Keine persönlichen Präferenzen"], correct: [0, 1, 3] },
+                { id: 3154, type: "single", text: "Welche Marktform hat den intensivsten Wettbewerb?", choices: ["Monopol", "Oligopol", "Polypol", "Monopson"], correct: [2] },
+                { id: 3155, type: "single", text: "Welche Größe beschreibt Wirtschaftlichkeit am besten?", choices: ["Output/Input", "Ertrag/Aufwand", "Gewinn/Kapital", "Umsatz/Kosten"], correct: [1] },
+                { id: 3156, type: "multi", text: "Welche Aussagen zur Sozialversicherung sind richtig?", choices: ["Sie basiert auf Solidarität", "Sie umfasst fünf Zweige", "Unfallversicherung zahlen beide je 50 %", "Lohnnebenkosten werden i. d. R. mit beeinflusst"], correct: [0, 1, 3] },
+                { id: 3157, type: "single", text: "Was bedeutet Eigentumsvorbehalt im Kaufrecht?", choices: ["Eigentum geht sofort auf den Käufer über", "Eigentum geht erst mit vollständiger Zahlung über", "Besitz und Eigentum bleiben beim Verkäufer", "Besitz geht erst nach Zahlung über"], correct: [1] },
+                { id: 3158, type: "single", text: "Was ist eine Willenserklärung?", choices: ["Eine Gefälligkeit", "Ein rechtlich nicht bindender Wunsch", "Eine Erklärung, die auf eine Rechtsfolge gerichtet ist", "Ein Verwaltungsakt"], correct: [2] },
+                { id: 3159, type: "single", text: "Welche Verjährungsfrist gilt regelmäßig im BGB (ohne Spezialnorm)?", choices: ["6 Monate", "1 Jahr", "2 Jahre", "3 Jahre"], correct: [3] },
+                { id: 3160, type: "multi", text: "Welche Rechte hat der Käufer bei Sachmängeln grundsätzlich?", choices: ["Nacherfüllung", "Rücktritt", "Minderung", "Schadensersatz"], correct: [0, 1, 2, 3] },
+                { id: 3161, type: "single", text: "Welches Ziel gehört NICHT zum Magischen Viereck?", choices: ["Preisniveaustabilität", "Vollbeschäftigung", "Sozialer Ausgleich", "Außenwirtschaftliches Gleichgewicht"], correct: [2] },
+                { id: 3162, type: "single", text: "Was misst das reale BIP?", choices: ["Wirtschaftsleistung zu laufenden Preisen", "Preisbereinigte Wirtschaftsleistung", "Summe aller Exporte", "Nur Konsumausgaben des Staates"], correct: [1] },
+                { id: 3163, type: "single", text: "Tarifautonomie bedeutet …", choices: ["Der Staat legt Löhne fest", "Tarifparteien regeln Arbeitsbedingungen eigenständig", "Der Betriebsrat legt Löhne fest", "Die IHK entscheidet über Löhne"], correct: [1] },
+                { id: 3164, type: "single", text: "Wofür steht das ‚S‘ bei SMART-Zielen?", choices: ["Spezifisch", "Schnell", "Standardisiert", "Skalierbar"], correct: [0] },
+                { id: 3165, type: "multi", text: "Welche Akteure bilden typischerweise den Markt?", choices: ["Anbieter", "Nachfrager", "Staat (als Regulierer)", "Zufallsagenten"], correct: [0, 1, 2] },
+                { id: 3166, type: "single", text: "Welche Aussage zur GmbH ist richtig?", choices: ["Haftung unbeschränkt", "Kein Stammkapital nötig", "Juristische Person, Haftung grundsätzlich beschränkt", "Nicht im Handelsregister einzutragen"], correct: [2] },
+                { id: 3167, type: "single", text: "Was ist der Hauptunterschied zwischen Werk- und Dienstvertrag?", choices: ["Werkvertrag schuldet Erfolg, Dienstvertrag das Bemühen", "Werkvertrag ist immer kostenlos", "Dienstvertrag ist immer befristet", "Kein Unterschied"], correct: [0] },
+                { id: 3168, type: "single", text: "Welche Aussage zur Lohnsteuer ist korrekt?", choices: ["Eigenständige Steuerart", "Teil der Einkommensteuer", "Nur für Selbstständige", "Wird vom Arbeitnehmer ans Finanzamt überwiesen"], correct: [1] },
+                { id: 3169, type: "single", text: "Was beschreibt Inflation?", choices: ["Allgemeines Sinken des Preisniveaus", "Allgemeines Steigen des Preisniveaus", "Anstieg des Reallohns", "Deflation von Vermögenswerten"], correct: [1] },
+                { id: 3170, type: "multi", text: "Welche Aussagen zur Konjunktur sind zutreffend?", choices: ["Sie verläuft in Phasen", "Boom = Hochkonjunktur", "Rezession = Rückgang der Wirtschaftsleistung", "Depression = besonders niedrige Auslastung"], correct: [0, 1, 2, 3] },
+                { id: 3171, type: "single", text: "Welche Aussage zur ABC-Kundenanalyse trifft zu?", choices: ["A-Kunden sind meist umsatzstark", "B-Kunden sind ohne Bedeutung", "C-Kunden sind immer unrentabel", "Nur für Produktionsbetriebe relevant"], correct: [0] },
+                { id: 3172, type: "single", text: "Was ist die Kernidee von TCO?", choices: ["Nur Beschaffungskosten zählen", "Nur Entsorgungskosten zählen", "Alle Lebenszykluskosten berücksichtigen", "Nur Personalkosten berücksichtigen"], correct: [2] },
+                { id: 3173, type: "single", text: "ROI beschreibt …", choices: ["Ertrag/Aufwand", "Gewinn/Investitionssumme", "Umsatz/Kosten", "Output/Input"], correct: [1] },
+                { id: 3174, type: "single", text: "Welche Rechtsfolge hat eine wirksame Anfechtung wegen Irrtums?", choices: ["Geschäft bleibt wirksam", "Unwirksamkeit ex tunc", "Nur Minderung möglich", "Nur Rücktritt möglich"], correct: [1] },
+                { id: 3175, type: "multi", text: "Welche Pflichten hat der Ausbildende nach BBiG?", choices: ["Ausbildungsmittel stellen", "Freistellen für Berufsschule", "Ausbildungsziel sicherstellen", "Probezeit auf 12 Monate verlängern"], correct: [0, 1, 2] },
+
+                // -----------------------------------------------------------
+                // B) 25 Abschlussprüfungsspezifische Fragen – IDs 3176–3200
+                // (an typische IHK-WISO-Fallkonstellationen angelehnt)
+                // -----------------------------------------------------------
+                { id: 3176, type: "single", text: "Ein Online-Kaufvertrag zwischen Unternehmer und Verbraucher kommt zustande. Welche Besonderheit gilt regelmäßig?", choices: ["Kein Widerrufsrecht", "14-tägiges Widerrufsrecht (Ausnahmen möglich)", "Widerruf nur mit Zustimmung des Händlers", "Widerrufsfrist 6 Monate"], correct: [1] },
+                { id: 3177, type: "single", text: "Beim Verbrauchsgüterkauf liegt die Beweislastumkehr in der Anfangszeit beim Verkäufer. Wozu dient dies?", choices: ["Erleichtert dem Verbraucher die Durchsetzung von Mängelrechten", "Erleichtert dem Verkäufer die Rückgabe", "Hebt Mängelrechte auf", "Verkürzt die Verjährung"], correct: [0] },
+                { id: 3178, type: "single", text: "Fixgeschäft: Lieferung „spätestens bis 01.06.“ vertraglich vereinbart. Am 02.06. noch nicht geliefert. Der Käufer …", choices: ["muss zuerst mahnen", "kann ohne Mahnung zurücktreten", "hat keine Rechte", "muss die Ware abnehmen"], correct: [1] },
+                { id: 3179, type: "multi", text: "Projektinvestition: Welche Kennzahlen eignen sich zur Beurteilung?", choices: ["ROI", "Amortisationsdauer", "Nominalzins allein", "TCO"], correct: [0, 1, 3] },
+                { id: 3180, type: "single", text: "Ein Unternehmen vergleicht zwei nahezu identische Produkte. Welche Methode ist angemessen?", choices: ["Nutzwertanalyse", "Quantitativer Angebotsvergleich", "Brainstorming", "Benchmarking nur intern"], correct: [1] },
+                { id: 3181, type: "single", text: "Ein Azubi will nach der Probezeit die Ausbildung aufgeben. Welche Kündigungsfrist gilt für ihn?", choices: ["Keine Frist", "Vier Wochen", "Zwei Wochen", "Drei Monate zum Quartalsende"], correct: [1] },
+                { id: 3182, type: "single", text: "Betriebsrat: In sozialen Angelegenheiten nach § 87 BetrVG hat er …", choices: ["kein Mitbestimmungsrecht", "volles Mitbestimmungsrecht (erzwingbar)", "nur Informationsrecht", "nur Vetorecht ohne Wirkung"], correct: [1] },
+                { id: 3183, type: "multi", text: "Welche Dokumente/Angaben gehören bei einer ordentlichen Lohnabrechnung typischerweise dazu?", choices: ["Bruttolohn", "Abzüge für SV", "Nettoauszahlung", "Mehrwertsteuer"], correct: [0, 1, 2] },
+                { id: 3184, type: "single", text: "Lieferverzug: Verkäufer liefert nach Fristsetzung nicht. Welche Rechte hat der Käufer grundsätzlich?", choices: ["Nur Nacherfüllung", "Rücktritt und Schadensersatz möglich", "Nur Minderung", "Keine"], correct: [1] },
+                { id: 3185, type: "single", text: "Eigentumsübergang an beweglichen Sachen erfordert …", choices: ["Zahlung und Rechnung", "Einigung und Übergabe", "Rechnung und Lieferschein", "Nur schriftlichen Vertrag"], correct: [1] },
+                { id: 3186, type: "single", text: "Annahmeverzug: Der Käufer holt die fällige, mangelfreie Ware nicht ab. Folge?", choices: ["Verkäufer verliert Eigentum", "Käufer gerät in Annahmeverzug", "Verjährung beginnt neu", "Preis erhöht sich automatisch"], correct: [1] },
+                { id: 3187, type: "multi", text: "Kaufvertragsstörungen – ordnen Sie zu: Käufer zahlt nicht rechtzeitig.", choices: ["Zahlungsverzug", "Lieferverzug", "Annahmeverzug", "Schlechtleistung"], correct: [0] },
+                { id: 3188, type: "single", text: "Ein Oligopol ist besonders anfällig für …", choices: ["vollständige Markttransparenz", "Preisabsprachen", "staatliche Planpreise", "reine Monopolmacht eines Anbieters"], correct: [1] },
+                { id: 3189, type: "single", text: "Mindestpreis (z. B. Mindestlohn) – typische Folge am Arbeitsmarkt bei geringer Nachfrage:", choices: ["Nachfrageüberhang", "Angebotsüberhang", "Gleichgewicht", "Keine Wirkung"], correct: [1] },
+                { id: 3190, type: "single", text: "Ein Betrieb plant ein Leasing statt Kauf. Hauptunterschied?", choices: ["Leasingnehmer wird sofort Eigentümer", "Leasing ist langfristige Nutzung ohne Eigentumserwerb", "Leasing ist immer billiger", "Leasing hat keine Vertragslaufzeit"], correct: [1] },
+                { id: 3191, type: "multi", text: "Welche Angaben sind bei Fernabsatzverträgen gegenüber Verbrauchern regelmäßig verpflichtend?", choices: ["Identität/Kontakt des Unternehmers", "Widerrufsbelehrung", "Wesentliche Eigenschaften der Ware", "Zwang zur Barzahlung"], correct: [0, 1, 2] },
+                { id: 3192, type: "single", text: "Eine Anpreisung (z. B. Prospekt) ist rechtlich …", choices: ["ein verbindliches Angebot", "eine invitatio ad offerendum (unverbindliche Aufforderung)", "eine Annahme", "ein Kaufvertrag"], correct: [1] },
+                { id: 3193, type: "single", text: "Mangelhafte Lieferung: Was ist vorrangig zu verlangen?", choices: ["Rücktritt sofort", "Nacherfüllung (Nachbesserung/Neulieferung)", "Minderung sofort", "Schadensersatz ohne Frist"], correct: [1] },
+                { id: 3194, type: "multi", text: "Betriebsrat – typische Mitbestimmungsfelder (§ 87 BetrVG):", choices: ["Arbeitszeiten/Urlaubsgrundsätze", "Technische Überwachung", "Tarifabschlüsse", "Sozialeinrichtungen"], correct: [0, 1, 3] },
+                { id: 3195, type: "single", text: "Steuerklasse VI wird typischerweise genutzt für …", choices: ["Alleinstehende", "Zweit- und Nebenjobs", "Verheiratete mit gleichem Einkommen", "Rentner"], correct: [1] },
+                { id: 3196, type: "single", text: "Ein Unternehmen möchte die preisliche Vorteilhaftigkeit zweier Kreditangebote vergleichen. Welche Größe ist geeignet?", choices: ["Nominalzins", "Effektivzins", "Bearbeitungsgebühren allein", "Nominalzins – Bearbeitungsgebühren"], correct: [1] },
+                { id: 3197, type: "single", text: "Ein Projekt spart jährlich Kosten und soll über 3 Jahre laufen. Welche Größe ist für die Renditebewertung typisch?", choices: ["ROI", "Liquidität 1. Grades", "Eigenkapitalquote", "Deckungsbeitrag III"], correct: [0] },
+                { id: 3198, type: "single", text: "Kündigungsfristen nach § 622 BGB (Arbeitnehmer-Grundfall):", choices: ["2 Wochen zum Monatsende", "4 Wochen zum 15. oder Monatsende", "3 Monate zum Jahresende", "Keine Frist"], correct: [1] },
+                { id: 3199, type: "multi", text: "Welche Aussagen zum Handelsregister treffen zu?", choices: ["Wird beim Amtsgericht geführt", "Eintragungen können konstitutiv oder deklaratorisch sein", "Firma = Name des Kaufmanns/Unternehmens", "Wird von der IHK geführt"], correct: [0, 1, 2] },
+                { id: 3200, type: "single", text: "Bei einer Nutzwertanalyse werden …", choices: ["nur Preise verglichen", "qualitative Kriterien gewichtet bewertet", "keine Gewichte verwendet", "nur Lieferzeiten betrachtet"], correct: [1] }
+            ];
+
+
+            // Hilfsfunktion um alle Fragen zu vereinen (für Resume-Funktionalität)
+            function getAllQuestions() {
+                return [...questionsAP2, ...questionsAP1, ...questionsWISO];
+            }
+
+            // Hilfsfunktion um Frage by ID zu finden
+            function findQuestionById(id) {
+                return getAllQuestions().find(q => q.id === id);
+            }
+
+            // Neue Funktion zur zufälligen Auswahl von 30 Fragen
+            function selectRandomQuestions(allQuestions, count = 30) {
+                // Kopie des Arrays erstellen, um Original nicht zu verändern
+                const shuffled = [...allQuestions];
+
+                // Fisher-Yates Shuffle Algorithmus
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+
+                // Erste 30 Fragen zurückgeben
+                return shuffled.slice(0, count);
+            }
+
+            // DOM-Elemente mit Error-Handling
+            const getElement = (id) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.error(`Element mit ID '${id}' nicht gefunden`);
+                }
+                return element;
+            };
+
+            const quizEl = getElement(SELECTORS.QUIZ);
+            const resultEl = getElement(SELECTORS.RESULT);
+            const startBtn = getElement(SELECTORS.START_BTN);
+            const startScreen = getElement(SELECTORS.START_SCREEN);
+            const navControls = getElement(SELECTORS.NAV_CONTROLS);
+            const prevBtn = getElement(SELECTORS.PREV_BTN);
+            const nextBtn = getElement(SELECTORS.NEXT_BTN);
+            const restartBtn = getElement(SELECTORS.RESTART_BTN);
+            const themeToggle = getElement(SELECTORS.THEME_TOGGLE);
+
+            let currentIndex = 0;
+            let selectedTopic = 'AP2'; // Standard-Thema
+            const answers = {}; // { [questionId]: [indices] }
+
+            // Theme-Funktionen
+            /**
+             * Speichert die Theme-Präferenz
+             * @param {string} theme - Das zu speichernde Theme
+             */
+            function saveThemePreference(theme) {
+                try {
+                    localStorage.setItem(THEME_STORAGE_KEY, theme);
+                } catch (error) {
+                    console.warn('Konnte Theme-Präferenz nicht speichern:', error);
+                }
+            }
+
+            /**
+             * Lädt die gespeicherte Theme-Präferenz
+             * @returns {string} Das gespeicherte Theme oder System-Präferenz als Standard
+             */
+            function loadThemePreference() {
+                try {
+                    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+                    if (saved && Object.values(THEMES).includes(saved)) {
+                        return saved;
+                    }
+                    // Fallback auf System-Präferenz wenn nichts gespeichert
+                    return window.matchMedia('(prefers-color-scheme: dark)').matches
+                        ? THEMES.DARK
+                        : THEMES.LIGHT;
+                } catch (error) {
+                    console.warn('Konnte Theme-Präferenz nicht laden:', error);
+                    return THEMES.LIGHT;
+                }
+            }
+
+            /**
+             * Wendet das angegebene Theme an
+             * @param {string} theme - Das anzuwendende Theme
+             */
+            function applyTheme(theme) {
+                const htmlElement = document.documentElement;
+                htmlElement.setAttribute('data-theme', theme);
+
+                // Icon aktualisieren
+                if (themeToggle) {
+                    themeToggle.textContent = THEME_ICONS[theme];
+                    themeToggle.setAttribute('title', getThemeTooltip(theme));
+                }
+
+                currentTheme = theme;
+                saveThemePreference(theme);
+            }
+
+            /**
+             * Gibt den Tooltip-Text für das aktuelle Theme zurück
+             * @param {string} theme - Das aktuelle Theme
+             * @returns {string} Tooltip-Text
+             */
+            function getThemeTooltip(theme) {
+                return theme === THEMES.LIGHT
+                    ? 'Zu Dunkelmodus wechseln'
+                    : 'Zu Hellmodus wechseln';
+            }
+
+            /**
+             * Wechselt zwischen Light und Dark Theme
+             */
+            function toggleTheme() {
+                const nextTheme = currentTheme === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+                applyTheme(nextTheme);
+            }
+
+            // Local Storage Funktionen anpassen
+            function saveAnswersToStorage() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        answers,
+                        currentIndex,
+                        selectedTopic, // Gewähltes Thema speichern
+                        selectedQuestionIds: currentQuizQuestions.map(q => q.id), // IDs der ausgewählten Fragen speichern
+                        timestamp: Date.now()
+                    }));
+                } catch (error) {
+                    console.warn('Konnte Antworten nicht speichern:', error);
+                }
+            }
+
+            function loadAnswersFromStorage() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        const data = JSON.parse(stored);
+                        // Nur laden wenn nicht älter als 1 Stunde
+                        if (Date.now() - data.timestamp < 3600000) {
+                            Object.assign(answers, data.answers);
+                            currentIndex = data.currentIndex || 0;
+                            selectedTopic = data.selectedTopic || 'AP2'; // Gewähltes Thema wiederherstellen
+
+                            // Vorher ausgewählte Fragen wiederherstellen (strikt aus dem gewählten Pool)
+                            if (data.selectedQuestionIds && data.selectedQuestionIds.length > 0) {
+                                currentQuizQuestions = data.selectedQuestionIds.map(id =>
+                                    findQuestionById(id) // Nutze die neue Hilfsfunktion
+                                ).filter(q => q !== undefined);
+
+                                if (currentQuizQuestions.length > 0) {
+                                    // UI-Auswahl entsprechend setzen
+                                    const topicRadio = document.querySelector(`input[name="topic"][value="${selectedTopic}"]`);
+                                    if (topicRadio) {
+                                        topicRadio.checked = true;
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Konnte Antworten nicht laden:', error);
+                }
+                return false;
+            }
+
+            function clearStoredAnswers() {
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (error) {
+                    console.warn('Konnte Storage nicht leeren:', error);
+                }
+            }
+
+            // Utility-Funktionen
+            function show(el) {
+                if (el) el.classList.remove('hidden');
+            }
+
+            function hide(el) {
+                if (el) el.classList.add('hidden');
+            }
+
+            /**
+             * Escaped HTML-Zeichen für XSS-Schutz
+             * @param {string} str - Der zu escapende String
+             * @returns {string} Escaped String
+             */
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            /**
+             * Erstellt die HTML-Struktur für eine Frage
+             * @param {Object} question - Das Fragen-Objekt
+             * @param {number} index - Index der aktuellen Frage
+             * @param {number} total - Gesamtanzahl der Fragen
+             * @returns {string} HTML-String
+             */
+            function createQuestionHTML(question, index, total) {
+                const savedAnswers = answers[question.id] || [];
+                let html = `<fieldset>
+                <legend>${index + 1} / ${total}: ${escapeHtml(question.text)}</legend>`;
+
+                question.choices.forEach((choice, choiceIndex) => {
+                    const id = `q${question.id}_c${choiceIndex}`;
+                    const checked = savedAnswers.includes(choiceIndex) ? 'checked' : '';
+                    const type = question.type === 'single' ? 'radio' : 'checkbox';
+
+                    html += `
+                    <div class="question">
+                        <input type="${type}" name="q${question.id}" id="${id}" value="${choiceIndex}" ${checked}>
+                        <label for="${id}" style="margin-left:.5rem">${escapeHtml(choice)}</label>
+                    </div>`;
+                });
+
+                html += '</fieldset>';
+                return html;
+            }
+
+            /**
+             * Rendert die aktuelle Frage (ANGEPASST für currentQuizQuestions)
+             */
+            function renderQuestion() {
+                try {
+                    const question = currentQuizQuestions[currentIndex]; // GEÄNDERT: Verwende currentQuizQuestions
+                    const total = currentQuizQuestions.length; // GEÄNDERT: Verwende currentQuizQuestions
+
+                    if (!question || !quizEl) {
+                        console.error('Fehler beim Rendern der Frage');
+                        return;
+                    }
+
+                    // HTML erstellen und einsetzen
+                    quizEl.innerHTML = createQuestionHTML(question, currentIndex, total);
+
+                    // Navigation aktualisieren
+                    updateNavigation();
+
+                    // UI-Zustand aktualisieren
+                    hide(startScreen);
+                    hide(resultEl);
+                    show(quizEl);
+                    show(navControls);
+
+                    // Fokus setzen
+                    const firstInput = quizEl.querySelector('input');
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+
+                    // Antworten speichern
+                    saveAnswersToStorage();
+                } catch (error) {
+                    console.error('Fehler beim Rendern der Frage:', error);
+                }
+            }
+
+            /**
+             * Aktualisiert die Navigations-Buttons (ANGEPASST)
+             */
+            function updateNavigation() {
+                if (prevBtn) {
+                    prevBtn.disabled = currentIndex === 0;
+                }
+                if (nextBtn) {
+                    nextBtn.textContent = (currentIndex === currentQuizQuestions.length - 1) ? 'Fertig' : 'Weiter'; // GEÄNDERT
+                }
+            }
+
+            /**
+             * Speichert die aktuellen Auswahlen der angezeigten Frage (ANGEPASST)
+             */
+            function saveCurrentSelections() {
+                try {
+                    const question = currentQuizQuestions[currentIndex]; // GEÄNDERT
+                    if (!question) return;
+
+                    const selectedInputs = document.querySelectorAll(`[name="q${question.id}"]:checked`);
+                    const selected = Array.from(selectedInputs).map(input => Number(input.value));
+
+                    answers[question.id] = selected;
+                    saveAnswersToStorage();
+                } catch (error) {
+                    console.error('Fehler beim Speichern der Auswahlen:', error);
+                }
+            }
+
+            /**
+             * Bewertet eine einzelne Frage basierend auf den gewählten Antworten (MIT TEILPUNKTEN)
+             * @param {Object} question - Das Fragen-Objekt
+             * @param {Array} selectedAnswers - Array der gewählten Antwortindizes
+             * @returns {number} Punkte für diese Frage (0.0 bis 1.0)
+             */
+            function evaluateQuestion(question, selectedAnswers) {
+                try {
+                    const correctAnswers = question.correct || [];
+
+                    // Keine Auswahl = 0 Punkte
+                    if (selectedAnswers.length === 0) {
+                        return 0;
+                    }
+
+                    // Single-Choice: Bleibt Alles-oder-Nichts
+                    if (question.type === 'single') {
+                        return selectedAnswers.length === 1 &&
+                            selectedAnswers[0] === correctAnswers[0] ? 1 : 0;
+                    }
+
+                    // Multi-Choice: Teilpunkte-System
+                    if (question.type === 'multi') {
+                        // Richtig gewählte Antworten zählen
+                        const correctlySelected = selectedAnswers.filter(ans =>
+                            correctAnswers.includes(ans)).length;
+
+                        // Falsch gewählte Antworten zählen
+                        const incorrectlySelected = selectedAnswers.filter(ans =>
+                            !correctAnswers.includes(ans)).length;
+
+                        // Nicht gewählte korrekte Antworten zählen
+                        const correctlyNotSelected = correctAnswers.filter(ans =>
+                            !selectedAnswers.includes(ans)).length;
+
+                        // Basis-Punkte: Anteil der richtig gewählten Antworten
+                        const basePoints = correctlySelected / correctAnswers.length;
+
+                        // Penalty für falsch gewählte Antworten (20% pro falscher Wahl)
+                        const penalty = incorrectlySelected * 0.2;
+
+                        // Endergebnis: Mindestens 0 Punkte
+                        const finalScore = Math.max(0, basePoints - penalty);
+
+                        return Number(finalScore.toFixed(3)); // Auf 3 Nachkommastellen runden
+                    }
+
+                    // Fallback für unbekannte Fragetypen
+                    return 0;
+                } catch (error) {
+                    console.error('Fehler bei der Bewertung einer Frage:', error);
+                    return 0;
+                }
+            }
+
+            /**
+             * Bewertet alle Fragen und liefert Ergebnisse zurück (ANGEPASST)
+             */
+            function evaluate() {
+                try {
+                    let totalPoints = 0;
+                    const maxPoints = currentQuizQuestions.length; // GEÄNDERT: Verwende currentQuizQuestions
+                    const details = [];
+
+                    currentQuizQuestions.forEach(question => { // GEÄNDERT: Verwende currentQuizQuestions
+                        const selectedAnswers = answers[question.id] || [];
+                        const score = evaluateQuestion(question, selectedAnswers);
+
+                        totalPoints += score;
+                        details.push({
+                            id: question.id,
+                            text: question.text,
+                            score: Number(score.toFixed(2)),
+                            max: 1
+                        });
+                    });
+
+                    return {
+                        totalPoints: Number(totalPoints.toFixed(2)),
+                        maxPoints,
+                        details
+                    };
+                } catch (error) {
+                    console.error('Fehler bei der Bewertung:', error);
+                    return { totalPoints: 0, maxPoints: currentQuizQuestions.length, details: [] }; // GEÄNDERT
+                }
+            }
+
+            /**
+             * Erstellt das HTML für die Ergebnisanzeige
+             * @param {Object} results - Die Bewertungsergebnisse
+             * @returns {string} HTML-String
+             */
+            function createResultHTML(results) {
+                const percent = Math.round((results.totalPoints / results.maxPoints) * 100);
+                const grade = getIHKGrade(percent);
+
+                // Farbe basierend auf Note bestimmen
+                const getGradeColor = (gradeKey) => {
+                    switch (gradeKey) {
+                        case 'SEHR_GUT': return '#4caf50'; // Grün
+                        case 'GUT': return '#8bc34a'; // Hellgrün
+                        case 'BEFRIEDIGEND': return '#ffc107'; // Gelb
+                        case 'AUSREICHEND': return '#ff9800'; // Orange
+                        case 'MANGELHAFT': return '#f44336'; // Rot
+                        case 'UNGENUEGEND': return '#9e1b1b'; // Dunkelrot
+                        default: return 'var(--accent)';
+                    }
+                };
+
+                let html = `
+                <h2>Quiz-Ergebnis</h2>
+                <div style="background: var(--surface); padding: 1rem; border-radius: var(--radius); margin-bottom: 1rem; border-left: 4px solid ${getGradeColor(grade.key)};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div>
+                            <strong style="font-size: 1.2rem;">${results.totalPoints.toFixed(2)} / ${results.maxPoints} Punkte</strong>
+                            <div style="color: var(--muted); font-size: 0.9rem;">entspricht ${percent}%</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="background: ${getGradeColor(grade.key)}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: bold;">
+                                ${grade.text}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="color: var(--foreground); font-style: italic;">
+                        ${escapeHtml(grade.message)}
+                    </div>
+                </div>
+                
+                <details style="margin-bottom: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: var(--surface); border-radius: var(--radius);">
+                        IHK-Notenschlüssel Fachinformatiker
+                    </summary>
+                    <div style="padding: 1rem; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); margin-top: 2px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--border);">
+                                    <th style="text-align: left; padding: 0.5rem;">Note</th>
+                                    <th style="text-align: left; padding: 0.5rem;">Bezeichnung</th>
+                                    <th style="text-align: right; padding: 0.5rem;">Punkte</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                // IHK-Notentabelle hinzufügen
+                Object.entries(IHK_GRADES).forEach(([key, gradeInfo]) => {
+                    const isCurrentGrade = key === grade.key;
+                    const bgColor = isCurrentGrade ? getGradeColor(key) : 'transparent';
+                    const textColor = isCurrentGrade ? 'white' : 'var(--foreground)';
+
+                    html += `
+                    <tr style="background: ${bgColor}; color: ${textColor};">
+                        <td style="padding: 0.3rem 0.5rem; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.note}</td>
+                        <td style="padding: 0.3rem 0.5rem; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.text}</td>
+                        <td style="padding: 0.3rem 0.5rem; text-align: right; font-weight: ${isCurrentGrade ? 'bold' : 'normal'};">${gradeInfo.min}-${gradeInfo.max}%</td>
+                    </tr>`;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+
+                <details>
+                    <summary style="cursor: pointer; font-weight: 600; padding: 0.5rem; background: var(--surface); border-radius: var(--radius);">
+                        Detaillierte Punkteverteilung
+                    </summary>
+                    <div style="padding: 1rem; background: var(--surface); border-radius: 0 0 var(--radius) var(--radius); margin-top: 2px;">`;
+
+                results.details.forEach(detail => {
+                    const questionPercent = Math.round((detail.score / detail.max) * 100);
+                    const isCorrect = detail.score === detail.max;
+                    const isPartial = detail.score > 0 && detail.score < detail.max;
+
+                    // Farbe und Icon basierend auf Punktzahl
+                    let iconColor, icon;
+                    if (isCorrect) {
+                        iconColor = '#4caf50'; // Grün
+                        icon = '✅';
+                    } else if (isPartial) {
+                        iconColor = '#ff9800'; // Orange für Teilpunkte
+                        icon = '🔸';
+                    } else {
+                        iconColor = '#f44336'; // Rot
+                        icon = '❌';
+                    }
+
+                    // Frage-Objekt finden für Antwortdetails
+                    const question = currentQuizQuestions.find(q => q.id === detail.id);
+                    const selectedAnswers = answers[detail.id] || [];
+
+                    html += `
+                    <div class="per-question" style="border-left: 3px solid ${iconColor};">
+                        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                            <span style="font-size: 1.1rem;">${icon}</span>
+                            <div style="flex: 1;">
+                                <strong>Frage ${detail.id}:</strong> ${escapeHtml(detail.text)}
+                                <div style="margin-top: 0.35rem; display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="score-badge" style="background: ${iconColor};">
+                                        ${detail.score.toFixed(2)} / ${detail.max} Punkte
+                                    </span>
+                                    <span style="color: var(--muted); font-size: 0.9rem;">
+                                        ${questionPercent}%
+                                    </span>
+                                </div>`;
+
+                    // Bei ALLEN Antworten: Lösungsdetails anzeigen (für maximalen Lerneffekt)
+                    if (question) {
+                        let headerText;
+                        if (isCorrect) {
+                            headerText = `✅ Vollständig richtig - Zur Bestätigung:`;
+                        } else if (isPartial) {
+                            headerText = `🔸 Teilpunkte erhalten - Verbesserungsmöglichkeiten:`;
+                        } else {
+                            headerText = `📚 Richtige Lösung:`;
+                        }
+
+                        html += `
+                                <div style="margin-top: 0.75rem; padding: 0.75rem; background: var(--editor-bg); border-radius: 6px; border: 1px solid var(--border);">
+                                    <div style="font-weight: 600; color: var(--muted); margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                        ${headerText}
+                                    </div>`;
+
+                        // Deine Antworten anzeigen (falls welche gewählt)
+                        if (selectedAnswers.length > 0) {
+                            html += `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <span style="color: var(--muted); font-size: 0.85rem; font-weight: 500;">Deine Antwort(en):</span>
+                                        <ul style="margin: 0.25rem 0 0 1rem; padding: 0;">`;
+                            selectedAnswers.forEach(index => {
+                                if (question.choices[index]) {
+                                    const isThisCorrect = question.correct.includes(index);
+                                    const itemColor = isThisCorrect ? '#4caf50' : '#f44336';
+                                    const itemIcon = isThisCorrect ? '✅' : '❌';
+                                    const itemWeight = isThisCorrect ? 'font-weight: 500;' : '';
+
+                                    html += `<li style="color: ${itemColor}; font-size: 0.85rem; ${itemWeight}">${itemIcon} ${escapeHtml(question.choices[index])}</li>`;
+                                }
+                            });
+                            html += `</ul>
+                                    </div>`;
+                        } else {
+                            html += `
+                                    <div style="margin-bottom: 0.5rem;">
+                                        <span style="color: var(--muted); font-size: 0.85rem; font-style: italic;">Keine Antwort gewählt</span>
+                                    </div>`;
+                        }
+
+                        // Korrekte Antworten anzeigen
+                        html += `
+                                    <div>
+                                        <span style="color: var(--muted); font-size: 0.85rem; font-weight: 500;">Korrekte Antwort(en):</span>
+                                        <ul style="margin: 0.25rem 0 0 1rem; padding: 0;">`;
+
+                        question.correct.forEach(correctIndex => {
+                            if (question.choices[correctIndex]) {
+                                html += `<li style="color: #4caf50; font-size: 0.85rem; font-weight: 500;">✅ ${escapeHtml(question.choices[correctIndex])}</li>`;
+                            }
+                        });
+
+                        html += `</ul>
+                                    </div>
+                                </div>`;
+                    }
+
+                    html += `
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                html += `
+                    </div>
+                </details>
+                
+                <div class="controls" style="margin-top: 1.5rem;">
+                    <button id="resultRestartBtn">Neues Quiz starten</button>
+                </div>`;
+
+                return html;
+            }        /**
+         * Ermittelt die IHK-Note basierend auf dem Prozentsatz
+         * @param {number} percent - Prozentsatz der erreichten Punkte
+         * @returns {Object} Note-Objekt mit allen relevanten Informationen
+         */
+            function getIHKGrade(percent) {
+                for (const [key, grade] of Object.entries(IHK_GRADES)) {
+                    if (percent >= grade.min && percent <= grade.max) {
+                        return {
+                            key,
+                            ...grade,
+                            message: GRADE_MESSAGES[key]
+                        };
+                    }
+                }
+                // Fallback für unerwartete Werte
+                return {
+                    key: 'UNGENUEGEND',
+                    ...IHK_GRADES.UNGENUEGEND,
+                    message: GRADE_MESSAGES.UNGENUEGEND
+                };
+            }
+
+            /**
+             * Gibt die passende Nachricht für einen Punktestand zurück (Legacy-Support)
+             * @param {number} percent - Prozentsatz der erreichten Punkte
+             * @returns {string} Nachricht
+             */
+            function getScoreMessage(percent) {
+                const grade = getIHKGrade(percent);
+                return grade.message;
+            }
+
+            /**
+             * Zeigt das Endergebnis an
+             */
+            function showResult() {
+                try {
+                    const results = evaluate();
+                    const html = createResultHTML(results);
+
+                    if (resultEl) {
+                        resultEl.innerHTML = html;
+
+                        // UI-Zustand aktualisieren
+                        hide(quizEl);
+                        hide(navControls);
+                        show(resultEl);
+
+                        // Event-Listener für Neustart-Button
+                        const restartButton = document.getElementById('resultRestartBtn');
+                        if (restartButton) {
+                            restartButton.addEventListener('click', restartQuiz);
+                            restartButton.focus();
+                        }
+
+                        // Storage leeren da Quiz beendet
+                        clearStoredAnswers();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Anzeigen des Ergebnisses:', error);
+                }
+            }
+
+            /**
+             * Startet das Quiz neu (ANGEPASST)
+             */
+            function restartQuiz() {
+                try {
+                    // Antworten zurücksetzen
+                    for (const key in answers) {
+                        delete answers[key];
+                    }
+                    currentIndex = 0;
+                    currentQuizQuestions = []; // HINZUGEFÜGT: Quiz-Fragen zurücksetzen
+
+                    // Storage leeren
+                    clearStoredAnswers();
+
+                    // UI zurücksetzen
+                    hide(resultEl);
+                    hide(quizEl);
+                    hide(navControls);
+                    show(startScreen);
+
+                    // Fokus auf Start-Button
+                    if (startBtn) {
+                        startBtn.focus();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Neustart:', error);
+                }
+            }
+
+            // Event-Listener mit Error-Handling (ANGEPASST)
+            if (startBtn) {
+                startBtn.addEventListener('click', () => {
+                    try {
+                        // Ausgewähltes Thema ermitteln und speichern
+                        selectedTopic = document.querySelector('input[name="topic"]:checked')?.value || 'AP2';
+
+                        // Passenden Pool auswählen
+                        let questionPool;
+                        switch (selectedTopic) {
+                            case 'AP1':
+                                questionPool = questionsAP1;
+                                break;
+                            case 'WISO':
+                                questionPool = questionsWISO;
+                                break;
+                            case 'AP2':
+                            default:
+                                questionPool = questionsAP2;
+                                break;
+                        }
+
+                        // Zufällige 30 Fragen aus dem gewählten Pool auswählen
+                        currentQuizQuestions = selectRandomQuestions(questionPool, 30);
+                        currentIndex = 0;
+
+                        // Antworten zurücksetzen für neues Quiz
+                        for (const key in answers) {
+                            delete answers[key];
+                        }
+
+                        renderQuestion();
+                    } catch (error) {
+                        console.error('Fehler beim Starten des Quiz:', error);
+                    }
+                });
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    try {
+                        saveCurrentSelections();
+                        if (currentIndex > 0) {
+                            currentIndex--;
+                            renderQuestion();
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Zurückgehen:', error);
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    try {
+                        saveCurrentSelections();
+                        if (currentIndex < currentQuizQuestions.length - 1) { // GEÄNDERT
+                            currentIndex++;
+                            renderQuestion();
+                        } else {
+                            showResult();
+                        }
+                    } catch (error) {
+                        console.error('Fehler beim Weitergehen:', error);
+                    }
+                });
+            }
+
+            if (restartBtn) {
+                restartBtn.addEventListener('click', restartQuiz);
+            }
+
+            // Theme-Toggle Event-Listener
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+
+            // Initialisierung beim Laden der Seite (ANGEPASST)
+            document.addEventListener('DOMContentLoaded', () => {
+                try {
+                    // Theme initialisieren
+                    const savedTheme = loadThemePreference();
+                    applyTheme(savedTheme);
+
+                    // Versuche gespeicherte Antworten zu laden
+                    if (loadAnswersFromStorage() && Object.keys(answers).length > 0 && currentQuizQuestions.length > 0) {
+                        // Falls gespeicherte Daten vorhanden, an entsprechender Stelle fortsetzen
+                        if (currentIndex < currentQuizQuestions.length) { // GEÄNDERT
+                            renderQuestion();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Initialisieren:', error);
+                }
+            });
+
+        </script>
+    </main>
+</body>
+
+</html>
